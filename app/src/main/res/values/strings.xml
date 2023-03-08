@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">GainsBookXML</string>
+
+    <!--MainActivity-->
+    <string name="AppBarText">GainsBook</string>
+
+    <!--Bottom Navigation-->
+    <string name="LogMenuText">Log</string>
+    <string name="StatsMenuText">Graph</string>
+    <string name="TimerMenuText">Timer</string>
+    <string name="ProfileMenuText">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

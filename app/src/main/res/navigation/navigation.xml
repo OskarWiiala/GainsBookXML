@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/logFragment">
+
+    <!--Log fragment-->
+    <fragment
+        android:id="@+id/logFragment"
+        android:name="com.example.gainsbookxml.fragments.LogFragment"
+        android:label="LogFragment"
+        tools:layout="@layout/fragment_log">
+        <action
+            android:id="@+id/action_logFragment_to_newWorkoutFragment"
+            app:destination="@id/newWorkoutFragment" />
+        <action
+            android:id="@+id/action_logFragment_to_viewWorkoutFragment"
+            app:destination="@id/viewWorkoutFragment" />
+        <action
+            android:id="@+id/action_logFragment_to_editWorkoutFragment"
+            app:destination="@id/editWorkoutFragment" />
+    </fragment>
+
+    <!--New workout fragment-->
+    <fragment
+        android:id="@+id/newWorkoutFragment"
+        android:name="com.example.gainsbookxml.fragments.NewWorkoutFragment"
+        android:label="NewWorkoutFragment"
+        tools:layout="@layout/fragment_new_workout">
+        <action
+            android:id="@+id/action_newWorkoutFragment_to_logFragment"
+            app:destination="@id/logFragment" />
+    </fragment>
+
+    <!--Edit workout fragment-->
+    <fragment
+        android:id="@+id/editWorkoutFragment"
+        android:name="com.example.gainsbookxml.fragments.EditWorkoutFragment"
+        android:label="EditWorkoutFragment"
+        tools:layout="@layout/fragment_edit_workout">
+        <action
+            android:id="@+id/action_editWorkoutFragment_to_logFragment"
+            app:destination="@id/logFragment" />
+    </fragment>
+
+    <!--View workout fragment-->
+    <fragment
+        android:id="@+id/viewWorkoutFragment"
+        android:name="com.example.gainsbookxml.fragments.ViewWorkoutFragment"
+        android:label="ViewWorkoutFragment"
+        tools:layout="@layout/fragment_view_workout">
+        <action
+            android:id="@+id/action_viewWorkoutFragment_to_logFragment"
+            app:destination="@id/logFragment" />
+    </fragment>
+
+    <!--Stats fragment-->
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.gainsbookxml.fragments.StatsFragment"
+        android:label="StatsFragment"
+        tools:layout="@layout/fragment_stats">
+        <action
+            android:id="@+id/action_statsFragment_to_newStatisticFragment"
+            app:destination="@id/newStatisticFragment" />
+    </fragment>
+
+    <!--New statistic fragment-->
+    <fragment
+        android:id="@+id/newStatisticFragment"
+        android:name="com.example.gainsbookxml.fragments.NewStatisticFragment"
+        android:label="NewStatisticFragment"
+        tools:layout="@layout/fragment_new_statistic">
+        <action
+            android:id="@+id/action_newStatisticFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
+    </fragment>
+
+    <!--Timer Fragment-->
+    <fragment
+        android:id="@+id/timerFragment"
+        android:name="com.example.gainsbookxml.fragments.TimerFragment"
+        android:label="TimerFragment"
+        tools:layout="@layout/fragment_timer">
+    </fragment>
+
+    <!--Profile fragment-->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.gainsbookxml.fragments.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_profile">
+    </fragment>
+
+</navigation>
