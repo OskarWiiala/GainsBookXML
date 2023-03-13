@@ -41,6 +41,10 @@
         <action
             android:id="@+id/action_editWorkoutFragment_to_logFragment"
             app:destination="@id/logFragment" />
+        <argument
+            android:name="workoutId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 
     <!--View workout fragment-->
@@ -52,6 +56,10 @@
         <action
             android:id="@+id/action_viewWorkoutFragment_to_logFragment"
             app:destination="@id/logFragment" />
+        <argument
+            android:name="workoutId"
+            app:argType="integer"
+            android:defaultValue="1" />
     </fragment>
 
     <!--Stats fragment-->

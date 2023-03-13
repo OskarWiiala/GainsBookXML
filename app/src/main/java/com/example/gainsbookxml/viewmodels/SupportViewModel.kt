@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.gainsbookxml.ExerciseWithIndex
-import com.example.gainsbookxml.WorkoutDate
+import com.example.gainsbookxml.utils.ExerciseWithIndex
+import com.example.gainsbookxml.utils.WorkoutDate
 import com.example.gainsbookxml.database.AppDatabase
 import com.example.gainsbookxml.database.entities.Exercise
 import com.example.gainsbookxml.database.entities.Workout
@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SupportViewModel(context: Context) : ViewModel() {
     private val dao = AppDatabase.getInstance(context).appDao
@@ -145,7 +146,12 @@ class SupportViewModel(context: Context) : ViewModel() {
     }
 }
 
-inline fun <VM : ViewModel> supportViewModelFactory(crossinline f: () -> VM) =
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = f() as T
+class SupportViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SupportViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return SupportViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}

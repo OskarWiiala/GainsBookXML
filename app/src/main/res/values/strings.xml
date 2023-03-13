@@ -9,6 +9,55 @@
     <string name="StatsMenuText">Graph</string>
     <string name="TimerMenuText">Timer</string>
     <string name="ProfileMenuText">Profile</string>
+
+    <!--Button text-->
+    <string name="AddNewYear">+ new year</string>
+    <string name="Ok">OK</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Plus">+</string>
+    <string name="AddNewExercise">+ new exercise</string>
+    <string name="AddNewLift">+ new lift</string>
+    <string name="StartCountdown">Start countdown</string>
+    <string name="StartStopwatch">Start stopwatch</string>
+    <string name="Stop">Stop</string>
+    <string name="Pause">Pause</string>
+    <string name="Restart">Restart</string>
+    <string name="Edit">Edit</string>
+
+    <!--Screen titles-->
+    <string name="NewWorkout">New workout</string>
+    <string name="EditWorkout">Edit workout</string>
+
+    <!--Tools:text-->
+    <string name="DefaultDate">31.12.2000</string>
+    <string name="DefaultExercise">Bench press: 5x5 100 kg 3mr</string>
+
+    <!--Dialog titles-->
+    <string name="EditProfileInfo">Edit profile info</string>
+    <string name="SelectTime">Select Time</string>
+    <string name="AddNewYear2">Add new year</string>
+    <string name="AddNewVariable">Add new variable</string>
+    <string name="AddNewExercise2">Add new exercise</string>
+    <string name="DeleteExercise">Delete exercise</string>
+    <string name="DeleteWorkout">Delete workout</string>
+
+    <!--TextField hints-->
+    <string name="EnterNewYear">Enter a new year here</string>
+    <string name="EditExercise">Edit your exercise here</string>
+    <string name="EnterNewExercise">Enter a new exercise here</string>
+    <string name="EnterNewVariable">Enter a new variable here</string>
+    <string name="EnterUsername">Enter a username here</string>
+    <string name="EnterDescription">Enter a description here</string>
+
+    <!--Decorated text-->
+    <string name="WorkoutDate"><u>9.3.2023</u></string>
+
+    <!--Content descriptions-->
+    <string name="WorkoutFabCD">Create new workout</string>
+    <string name="DeleteWorkoutCD">Delete workout</string>
+    <string name="EditWorkoutCD">Edit workout</string>
+    <string name="PickDateCD">Edit workout</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

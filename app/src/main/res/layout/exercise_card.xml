@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="exercise"
+            type="String" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/exerciseCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:strokeColor="@color/primary"
+        app:strokeWidth="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/exerciseText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{exercise}"
+                    android:padding="8dp"
+                    android:textStyle="bold"
+                    tools:text="@string/DefaultExercise" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/editExerciseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/EditWorkoutCD"
+                    android:padding="8dp"
+                    android:src="@drawable/edit_icon_24" />
+
+                <ImageButton
+                    android:id="@+id/deleteExerciseButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/DeleteWorkoutCD"
+                    android:padding="8dp"
+                    android:src="@drawable/delete_icon_24" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

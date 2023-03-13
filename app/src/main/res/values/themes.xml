@@ -19,7 +19,7 @@
         <item name="android:name">androidx.navigation.fragment.NavHostFragment</item>
     </style>
 
-    <style name="Theme.GainsBookXML.BottomNavigationBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+    <style name="Theme.GainsBookXML.BottomNavigationBar" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="menu">@menu/bottom_navigation_menu</item>
     </style>
 </resources>

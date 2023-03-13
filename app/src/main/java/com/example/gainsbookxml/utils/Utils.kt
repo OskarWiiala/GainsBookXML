@@ -1,4 +1,4 @@
-package com.example.gainsbookxml
+package com.example.gainsbookxml.utils
 
 /**
  * @author Oskar Wiiala

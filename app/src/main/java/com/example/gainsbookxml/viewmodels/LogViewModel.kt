@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 /**
  * @author Oskar Wiiala
  * @param context
- * View model for LogScreen
+ * View model for LogFragment
  */
 class LogViewModel(context: Context) : ViewModel() {
     private val dao = AppDatabase.getInstance(context).appDao
@@ -43,7 +43,12 @@ class LogViewModel(context: Context) : ViewModel() {
     }
 }
 
-inline fun <VM : ViewModel> logViewModelFactory(crossinline f: () -> VM) =
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = f() as T
+class LogViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LogViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LogViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
