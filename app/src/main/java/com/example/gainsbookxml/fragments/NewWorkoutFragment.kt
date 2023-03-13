@@ -27,10 +27,6 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
         SupportViewModelFactory(requireContext())
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,7 +59,10 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
         // Calendar picker
         binding.pickDateButton.setOnClickListener {
             // Initiate datePickerDialog here
-            pickDatePopup(supportViewModel = supportViewModel, context = requireContext())
+            pickDatePopup(
+                supportViewModel = supportViewModel,
+                context = requireContext(),
+            )
         }
         // List of exercises
         binding.ExerciseList.apply {

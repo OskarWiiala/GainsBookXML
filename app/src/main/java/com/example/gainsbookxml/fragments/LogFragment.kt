@@ -23,7 +23,6 @@ import com.example.gainsbookxml.viewmodels.LogViewModelFactory
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import java.util.*
 
 class LogFragment : Fragment(), WorkoutClickListener {
