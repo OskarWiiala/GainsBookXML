@@ -11,10 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.gainsbookxml.R
 import com.example.gainsbookxml.adapters.ExerciseListAdapter
 import com.example.gainsbookxml.databinding.FragmentEditWorkoutBinding
-import com.example.gainsbookxml.databinding.FragmentNewWorkoutBinding
 import com.example.gainsbookxml.utils.ExerciseClickListener
 import com.example.gainsbookxml.utils.deletePopup
 import com.example.gainsbookxml.utils.newExercisePopup
@@ -23,9 +21,15 @@ import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
 import kotlinx.coroutines.launch
 
+/**
+ * This fragment is used to edit the date and exercises of a selected workout.
+ * @author Oskar Wiiala
+ */
 class EditWorkoutFragment : Fragment(), ExerciseClickListener {
     val TAG = "EditWorkoutFragment"
 
+    // Arguments that were passed when navigating here
+    // Should only have workoutId
     private val args: EditWorkoutFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentEditWorkoutBinding
@@ -49,6 +53,7 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
         // Adds the selected workout to view model based on workout id
         supportViewModel.getWorkoutByID(workoutID = args.workoutId)
 
+        // Updates the date in the UI whenever date changes in view model
         lifecycleScope.launch {
             supportViewModel.date.collect {
                 binding.date = "${it.day}.${it.month}.${it.year}"
@@ -57,14 +62,15 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
 
         // Calendar picker
         binding.pickDateButton.setOnClickListener {
-            // Initiate datePickerDialog here
+            // Initiate custom datePickerDialog
             pickDatePopup(
                 supportViewModel = supportViewModel,
                 context = requireContext()
             )
         }
 
-        // List of exercises
+        // Applies the layout manager and adapter for the recycler view
+        // that lists all the exercises of this workout
         binding.ExerciseList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter =
@@ -73,6 +79,9 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
                     clickListener = this@EditWorkoutFragment,
                     type = "card"
                 )
+
+            // Updates the list whenever any changes are made to the list
+            // of exercises in the view model
             lifecycleScope.launch {
                 supportViewModel.exercises.collect {
                     // quick and dirty
@@ -81,7 +90,8 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             }
         }
 
-        // Add new exercise button
+        // Displays a popup whenever the + new exercise button is clicked.
+        // The popup consists of an edit text, where the user can add a new exercise
         binding.buttonAddNewExercise.setOnClickListener {
             newExercisePopup(
                 supportViewModel = supportViewModel,
@@ -92,7 +102,8 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             )
         }
 
-        // Ok/Cancel
+        // OK button, which adds a new workout with exercises to database via view model
+        // And then navigates back to LogFragment
         binding.buttonOk.setOnClickListener {
             Log.d(TAG, "clicked OK")
             supportViewModel.addWorkout(
@@ -107,6 +118,7 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             findNavController().navigate(direction)
         }
 
+        // Cancel button, navigates back to LogFragment
         binding.buttonCancel.setOnClickListener {
             Log.d(TAG, "clicked cancel")
             val direction = EditWorkoutFragmentDirections.actionEditWorkoutFragmentToLogFragment()
@@ -114,6 +126,8 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
         }
     }
 
+    // Is called whenever the edit-ImageButton is clicked on an exercise card.
+    // Displays a popup which is used to edit a selected exercise
     override fun onEditClick(description: String, exerciseIndex: Int) {
         newExercisePopup(
             supportViewModel = supportViewModel,
@@ -124,6 +138,8 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
         )
     }
 
+    // Is called whenever the delete-ImageButton is clicked on an exercise card.
+    // Displays a popup which is used to confirm deletion of a selected exercise
     override fun onDeleteClick(description: String, exerciseIndex: Int) {
         deletePopup(
             supportViewModel = supportViewModel,

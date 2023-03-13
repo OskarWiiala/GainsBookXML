@@ -11,18 +11,21 @@ import com.example.gainsbookxml.databinding.WorkoutCardBinding
 import com.example.gainsbookxml.utils.WorkoutClickListener
 import com.example.gainsbookxml.utils.WorkoutItem
 import com.example.gainsbookxml.viewmodels.LogViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
+/**
+ * Custom list adapter for workouts.
+ * Used by LogFragment.
+ * @param logViewModel Used for handling workouts
+ * @param clickListener used to call an interface function for view/edit/delete functions
+ * @author Oskar Wiiala
+ */
 class WorkoutListAdapter(
     private val logViewModel: LogViewModel,
     private val clickListener: WorkoutClickListener
 ) : ListAdapter<WorkoutItem, RecyclerView.ViewHolder>(WorkoutItemCallBack()) {
 
-    /**
-     * Provide a reference to the type of views that you are using
-     * (custom ViewHolder)
-     */
+    // View holder holds a card that displays the three
+    // first exercises of the workout and edi/delete buttons
     class ViewHolder(private val binding: WorkoutCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
 

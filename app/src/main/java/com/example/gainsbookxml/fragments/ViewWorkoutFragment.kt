@@ -10,14 +10,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.gainsbookxml.R
 import com.example.gainsbookxml.adapters.ExerciseListAdapter
-import com.example.gainsbookxml.databinding.FragmentEditWorkoutBinding
 import com.example.gainsbookxml.databinding.FragmentViewWorkoutBinding
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
 import kotlinx.coroutines.launch
 
+/**
+ * This fragment is used to view a selected workout.
+ * @author Oskar Wiiala
+ */
 class ViewWorkoutFragment : Fragment() {
     val TAG = "EditWorkoutFragment"
 
@@ -50,7 +52,8 @@ class ViewWorkoutFragment : Fragment() {
             }
         }
 
-        // List of exercises
+        // Applies the layout manager and adapter for the recycler view
+        // that lists all the exercises of this workout
         binding.ExerciseList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter =

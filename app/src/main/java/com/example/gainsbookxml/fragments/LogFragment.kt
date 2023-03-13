@@ -25,12 +25,19 @@ import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * The main screen of the app. It displays a list of workouts by month and year.
+ * A new year can also be added to the database here.
+ */
 class LogFragment : Fragment(), WorkoutClickListener {
     private lateinit var binding: FragmentLogBinding
 
+    // Used to handle changing the month and year
     private val supportViewModel: SupportViewModel by viewModels {
         SupportViewModelFactory(requireContext())
     }
+
+    // used to add/delete and get workouts
     private val logViewModel: LogViewModel by viewModels {
         LogViewModelFactory(requireContext())
     }
@@ -41,32 +48,28 @@ class LogFragment : Fragment(), WorkoutClickListener {
     ): View {
         binding = FragmentLogBinding.inflate(layoutInflater)
 
-        // Get workouts from database to view model
         initUI()
-
-        // Just for testing purposes
-        /*val listOfExercises = listOf(
-            ExerciseWithIndex(
-                description = "pull up",
-                index = 0
-            )
-        )
-        supportViewModel.addWorkout(exercises = listOfExercises, day = 9, month = 3, year = 2023)*/
 
         // Inflate the layout for this fragment
         return binding.root
     }
 
+    // Initializes the UI for the fragment
     private fun initUI() {
-        // get workouts by selection of year and month
-        logViewModel.getWorkoutsByYearMonth(year = 2023, month = 3)
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
 
+        // get workouts by this year and month
+        logViewModel.getWorkoutsByYearMonth(year = currentYear, month = currentMonth + 1)
+
+        // Click listener for the + fab
         binding.fab.setOnClickListener {
             val direction = LogFragmentDirections.actionLogFragmentToNewWorkoutFragment()
             findNavController().navigate(direction)
         }
 
-
+        // Click listener for + add new year -button
+        // Displays a popup with an edit text in which user inputs a new year
         binding.AddNewYearButton.setOnClickListener {
             newYearPopup(
                 supportViewModel = supportViewModel,
@@ -90,13 +93,10 @@ class LogFragment : Fragment(), WorkoutClickListener {
             "December"
         )
 
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-
         var selectedMonth = currentMonth + 1
         var selectedYear = currentYear
 
-        // get years for yearSpinner
+        // View model gets all saved years from database and stores them in a StateFlow variable
         supportViewModel.getYears()
 
         val monthSpinnerAdapter = ArrayAdapter(
@@ -111,7 +111,9 @@ class LogFragment : Fragment(), WorkoutClickListener {
         binding.monthSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    // When selecting a month in the spinner list
                     selectedMonth = p2 + 1
+                    // Updates the workouts into the view model based on selection of month and year
                     logViewModel.getWorkoutsByYearMonth(year = selectedYear, month = selectedMonth)
 
                 }
@@ -157,6 +159,7 @@ class LogFragment : Fragment(), WorkoutClickListener {
                         ) {
                             // Gets the correct year from view model based on index p2
                             selectedYear = supportViewModel.years.value[p2].year
+                            // Updates the workouts into the view model based on selection of month and year
                             logViewModel.getWorkoutsByYearMonth(
                                 year = selectedYear,
                                 month = selectedMonth
@@ -170,11 +173,15 @@ class LogFragment : Fragment(), WorkoutClickListener {
             }
         }
 
-
+        // Applies the layout manager and adapter for the workout list recycler view
+        // that lists all the workouts of this month and year
         binding.WorkoutList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter =
                 WorkoutListAdapter(logViewModel = logViewModel, clickListener = this@LogFragment)
+
+            // Updates the list whenever any changes are made to the list
+            // of workouts in the view model
             lifecycleScope.launch {
                 logViewModel.workouts.collect {
                     (adapter as WorkoutListAdapter).notifyDataSetChanged()
@@ -183,18 +190,24 @@ class LogFragment : Fragment(), WorkoutClickListener {
         }
     }
 
+    // Is called whenever a workout card is clicked
+    // Navigates to ViewWorkoutFragment
     override fun onViewClick(workoutId: Int) {
         // navigate to ViewWorkoutFragment with workout id
         val direction = LogFragmentDirections.actionLogFragmentToViewWorkoutFragment(workoutId)
         findNavController().navigate(direction)
     }
 
+    // Is called whenever the edit-ImageButton is clicked on a workout card.
+    // Navigates to EditWorkoutFragment
     override fun onEditClick(workoutId: Int) {
         // navigate to ViewWorkoutFragment with workout id
         val direction = LogFragmentDirections.actionLogFragmentToEditWorkoutFragment(workoutId)
         findNavController().navigate(direction)
     }
 
+    // Is called whenever the delete-ImageButton is clicked on a workout card.
+    // Displays a popup which is used to confirm deletion of a selected workout
     override fun onDeleteClick(workoutId: Int, year: Int, month: Int) {
         // Delete workout by id
         deletePopup(

@@ -11,6 +11,17 @@ import com.example.gainsbookxml.databinding.ExerciseItemBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 
+/**
+ * Custom list adapter for exercises.
+ * Used by NewWorkoutFragment, EditWorkoutFragment and ViewWorkoutFragment.
+ * Uses two types of ViewHolders, ItemViewHolder and CardViewHolder.
+ * ItemViewHolder displays a very basic text view with the exercise.
+ * CardViewHolder displays a fancy card with a red border and edit/delete buttons
+ * @param supportViewModel Used for handling dates and exercises
+ * @param clickListener used to call an interface function for edit/delete functions
+ * @param type pass item or card. With item, ItemViewHolder is loaded, with card, CardViewHolder is loaded.
+ * @author Oskar Wiiala
+ */
 class ExerciseListAdapter(
     private val supportViewModel: SupportViewModel,
     private val clickListener: ExerciseClickListener?,
@@ -32,9 +43,11 @@ class ExerciseListAdapter(
             }
         }
 
+        // Handle whatever UI elements you want
         fun bind(
             exercise: String,
         ) {
+            // binding.exercise is a data variable used to display the exercise as text
             binding.exercise = exercise
         }
     }
@@ -54,16 +67,19 @@ class ExerciseListAdapter(
             }
         }
 
+        // Handle whatever UI elements you want
         fun bind(
             item: ExerciseWithIndex,
             clickListener: ExerciseClickListener?
         ) {
             val TAG = "onBindViewHolder"
+
+            // binding.exercise is a data variable used to display the exercise as text
             binding.exercise = item.description
 
             // Click listener for clicking edit button
             binding.editExerciseButton.setOnClickListener {
-                Log.d(TAG, "clicked edit button with item: $item")
+                // Calls interface function to edit click functionality
                 clickListener?.onEditClick(
                     description = item.description,
                     exerciseIndex = item.index
@@ -72,7 +88,7 @@ class ExerciseListAdapter(
 
             // Click listener for clicking delete button
             binding.deleteExerciseButton.setOnClickListener {
-                Log.d(TAG, "clicked delete button with item: $item")
+                // Calls interface function to delete click functionality
                 clickListener?.onDeleteClick(
                     description = item.description,
                     exerciseIndex = item.index
@@ -89,7 +105,9 @@ class ExerciseListAdapter(
     ): RecyclerView.ViewHolder {
         Log.d(TAG, "viewType: $viewType")
         return when (type) {
+            // Basic text view holder
             "item" -> ItemViewHolder.from(parent)
+            // Fancy card view holder
             "card" -> CardViewHolder.from(parent)
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -101,7 +119,7 @@ class ExerciseListAdapter(
 
         when (holder) {
             is CardViewHolder -> {
-                Log.d(TAG, "is CardViewHolder, position: $position")
+                // The specific exercise with index item based on position in list
                 val item = supportViewModel.exercises.value[position]
                 holder.bind(
                     item = item,
@@ -109,7 +127,7 @@ class ExerciseListAdapter(
                 )
             }
             is ItemViewHolder -> {
-                Log.d(TAG, "is ItemViewHolder, position: $position")
+                // Same as in CardViewHolder but with just the exercise description
                 val exercise = supportViewModel.exercises.value[position].description
                 holder.bind(exercise = exercise)
             }
