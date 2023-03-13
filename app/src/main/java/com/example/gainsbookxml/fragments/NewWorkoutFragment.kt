@@ -71,6 +71,7 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
                 ExerciseListAdapter(
                     supportViewModel = supportViewModel,
                     clickListener = this@NewWorkoutFragment,
+                    type = "card"
                 )
             lifecycleScope.launch {
                 supportViewModel.exercises.collect {

@@ -71,6 +71,7 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
                 ExerciseListAdapter(
                     supportViewModel = supportViewModel,
                     clickListener = this@EditWorkoutFragment,
+                    type = "card"
                 )
             lifecycleScope.launch {
                 supportViewModel.exercises.collect {
@@ -78,7 +79,6 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
                     (adapter as ExerciseListAdapter).notifyDataSetChanged()
                 }
             }
-
         }
 
         // Add new exercise button
