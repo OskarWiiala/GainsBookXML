@@ -12,6 +12,7 @@
 
     <!--Button text-->
     <string name="AddNewYear">+ new year</string>
+    <string name="AddNewVariable">+ new lift</string>
     <string name="Ok">OK</string>
     <string name="Cancel">Cancel</string>
     <string name="Plus">+</string>
@@ -37,7 +38,7 @@
     <string name="EditProfileInfo">Edit profile info</string>
     <string name="SelectTime">Select Time</string>
     <string name="AddNewYear2">Add new year</string>
-    <string name="AddNewVariable">Add new variable</string>
+    <string name="AddNewVariable2">Add new variable</string>
     <string name="AddNewExercise2">Add new exercise</string>
     <string name="DeleteExercise">Delete exercise</string>
     <string name="DeleteWorkout">Delete workout</string>
@@ -55,6 +56,7 @@
 
     <!--Content descriptions-->
     <string name="WorkoutFabCD">Create new workout</string>
+    <string name="StatisticFabCD">Create new statistic</string>
     <string name="DeleteWorkoutCD">Delete workout</string>
     <string name="EditWorkoutCD">Edit workout</string>
     <string name="PickDateCD">Edit workout</string>

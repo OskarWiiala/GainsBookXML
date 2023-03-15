@@ -12,4 +12,5 @@
     <color name="faded_secondary">#4092003B</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="gray">#808080</color>
+    <color name="faded_primary">#80E53838</color>
 </resources>

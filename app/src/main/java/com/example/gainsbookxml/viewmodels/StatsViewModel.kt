@@ -114,6 +114,10 @@ class StatsViewModel(context: Context) : ViewModel() {
         _type.emit(type)
     }
 
+    fun getTypes(): List<String> {
+        return types
+    }
+
     // Inserts a new statistic to database
     fun insertStatistic(
         variableName: String,
@@ -139,7 +143,12 @@ class StatsViewModel(context: Context) : ViewModel() {
     }
 }
 
-inline fun <VM : ViewModel> statsViewModelFactory(crossinline f: () -> VM) =
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = f() as T
+class StatsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(StatsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return StatsViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}

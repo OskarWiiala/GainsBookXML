@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.viewmodels.LogViewModel
+import com.example.gainsbookxml.viewmodels.StatsViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.google.android.material.button.MaterialButton
 
@@ -46,6 +47,47 @@ fun newYearPopup(supportViewModel: SupportViewModel, context: Context) {
         Log.d(TAG, "clicked OK")
         val input = userInput.text.toString().toIntOrNull()
         if (input != null) supportViewModel.insertYear(input)
+        dialog.cancel()
+    }
+    btnCancel.setOnClickListener {
+        Log.d(TAG, "clicked Cancel")
+        dialog.cancel()
+    }
+}
+
+fun newVariablePopup(statsViewModel: StatsViewModel, context: Context) {
+    val TAG = "NewvariablePopup"
+    val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+    // sets a custom dialog interface for the popup
+    val li = LayoutInflater.from(context)
+    val view = li.inflate(R.layout.dialog_text_field, null)
+
+    val dialogTitle = view.findViewById<TextView>(R.id.dialogTitle)
+    // Set title
+    dialogTitle.text = context.getString(R.string.AddNewVariable2)
+
+    val userInput = view.findViewById<EditText>(R.id.editText)
+
+    // set some attributes to userInput
+    userInput.hint = context.getString(R.string.EnterNewVariable)
+
+    // get OK/Cancel buttons
+    val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
+    val btnCancel = view.findViewById<MaterialButton>(R.id.buttonCancel)
+
+
+    builder.setView(view)
+    builder.setCancelable(true)
+
+    // Puts the popup to the screen
+    val dialog: AlertDialog = builder.create()
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+
+    btnOk.setOnClickListener {
+        Log.d(TAG, "clicked OK")
+        val input = userInput.text.toString()
+        statsViewModel.insertVariable(input)
         dialog.cancel()
     }
     btnCancel.setOnClickListener {

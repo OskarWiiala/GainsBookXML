@@ -1,15 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragments.StatsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!--Top bar for adding new year lift-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/AddNewYearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:padding="10dp"
+            android:text="@string/AddNewYear"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/AddNewVariableButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="10dp"
+            android:padding="10dp"
+            android:text="@string/AddNewVariable"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/secondary" />
+
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:background="@color/teal_200"
         android:gravity="center"
+        android:text="graph goes here" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="stats fragment" />
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/variableSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="2"
+                android:background="@drawable/spinner_background"
+                android:gravity="end"
+                android:minHeight="42dp"
+                android:spinnerMode="dropdown" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/typeSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/spinner_background"
+                android:gravity="end"
+                android:minHeight="42dp"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/monthSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="2"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/spinner_background"
+                android:gravity="end"
+                android:minHeight="42dp"
+                android:spinnerMode="dropdown" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/yearSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/spinner_background"
+                android:gravity="end"
+                android:minHeight="42dp"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/StatisticFabCD"
+                android:src="@drawable/plus_icon_24"
+                app:tint="@color/white" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
