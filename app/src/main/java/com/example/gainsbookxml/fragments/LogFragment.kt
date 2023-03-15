@@ -15,13 +15,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.WorkoutListAdapter
 import com.example.gainsbookxml.databinding.FragmentLogBinding
-import com.example.gainsbookxml.utils.WorkoutClickListener
-import com.example.gainsbookxml.utils.deletePopup
-import com.example.gainsbookxml.utils.newYearPopup
+import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.LogViewModel
 import com.example.gainsbookxml.viewmodels.LogViewModelFactory
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -56,8 +55,17 @@ class LogFragment : Fragment(), WorkoutClickListener {
 
     // Initializes the UI for the fragment
     private fun initUI() {
-        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val currentMonth = Calendar.getInstance().get(Calendar.MONTH)
+
+        // View model gets all saved years from database and stores them in a StateFlow variable
+        supportViewModel.getYears()
+
+        // Initializes month and year to be current month and year
+        lifecycleScope.launch(Dispatchers.IO) {
+            supportViewModel.setCurrentYear(currentYear)
+            supportViewModel.setCurrentMonth(currentMonth + 1)
+        }
 
         // get workouts by this year and month
         logViewModel.getWorkoutsByYearMonth(year = currentYear, month = currentMonth + 1)
@@ -77,101 +85,21 @@ class LogFragment : Fragment(), WorkoutClickListener {
             )
         }
 
-        // list of months for monthSpinner
-        val months = listOf(
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
+        monthSpinner(
+            spinner = binding.monthSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = logViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope
         )
 
-        var selectedMonth = currentMonth + 1
-        var selectedYear = currentYear
-
-        // View model gets all saved years from database and stores them in a StateFlow variable
-        supportViewModel.getYears()
-
-        val monthSpinnerAdapter = ArrayAdapter(
-            requireContext().applicationContext,
-            R.layout.custom_spinner_item,
-            months
+        yearSpinner(
+            spinner = binding.yearSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = logViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope
         )
-
-        binding.monthSpinner.adapter = monthSpinnerAdapter
-        binding.monthSpinner.setSelection(currentMonth)
-
-        binding.monthSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    // When selecting a month in the spinner list
-                    selectedMonth = p2 + 1
-                    // Updates the workouts into the view model based on selection of month and year
-                    logViewModel.getWorkoutsByYearMonth(year = selectedYear, month = selectedMonth)
-
-                }
-
-                // Unused, here to prevent member implementation error
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                }
-            }
-
-        lifecycleScope.launch {
-            // has to collect years to reconstruct an new list of years everytime a new year is added
-            supportViewModel.years.collect {
-                Log.d("collecting", "collecting years")
-                // Inserts current year to database is view model does not have any years
-                // Inserting an already existing year just replaces it so no worries if the view model updates a little late
-                if (supportViewModel.years.value.isEmpty()) {
-                    supportViewModel.insertYear(currentYear)
-                }
-
-                // Converts years from type Year() to type Int
-                val yearsConverted = mutableListOf<Int>()
-                supportViewModel.years.value.forEach { yearsConverted.add(it.year) }
-
-                val yearSpinnerAdapter = ArrayAdapter(
-                    requireContext().applicationContext,
-                    R.layout.custom_spinner_item,
-                    yearsConverted
-                )
-
-                binding.yearSpinner.adapter = yearSpinnerAdapter
-
-                if (yearsConverted.contains(currentYear)) {
-                    binding.yearSpinner.setSelection(yearsConverted.indexOf(currentYear))
-                } else binding.yearSpinner.setSelection(0)
-
-                binding.yearSpinner.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(
-                            p0: AdapterView<*>?,
-                            p1: View?,
-                            p2: Int,
-                            p3: Long
-                        ) {
-                            // Gets the correct year from view model based on index p2
-                            selectedYear = supportViewModel.years.value[p2].year
-                            // Updates the workouts into the view model based on selection of month and year
-                            logViewModel.getWorkoutsByYearMonth(
-                                year = selectedYear,
-                                month = selectedMonth
-                            )
-                        }
-
-                        // Unused, here to prevent member implementation error
-                        override fun onNothingSelected(p0: AdapterView<*>?) {
-                        }
-                    }
-            }
-        }
 
         // Applies the layout manager and adapter for the workout list recycler view
         // that lists all the workouts of this month and year

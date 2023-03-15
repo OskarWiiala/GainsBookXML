@@ -66,7 +66,7 @@
             android:paddingBottom="10dp">
 
             <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/variableSpinner"
+                android:id="@+id/variable_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -79,7 +79,7 @@
                 android:spinnerMode="dropdown" />
 
             <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/typeSpinner"
+                android:id="@+id/type_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -102,7 +102,7 @@
             android:paddingBottom="10dp">
 
             <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/monthSpinner"
+                android:id="@+id/month_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -115,7 +115,7 @@
                 android:spinnerMode="dropdown" />
 
             <androidx.appcompat.widget.AppCompatSpinner
-                android:id="@+id/yearSpinner"
+                android:id="@+id/year_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

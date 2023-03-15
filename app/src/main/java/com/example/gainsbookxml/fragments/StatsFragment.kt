@@ -13,19 +13,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.databinding.FragmentStatsBinding
-import com.example.gainsbookxml.utils.newVariablePopup
-import com.example.gainsbookxml.utils.newYearPopup
-import com.example.gainsbookxml.viewmodels.StatsViewModel
-import com.example.gainsbookxml.viewmodels.StatsViewModelFactory
-
-import com.example.gainsbookxml.viewmodels.SupportViewModel
-import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
+import com.example.gainsbookxml.utils.*
+import com.example.gainsbookxml.viewmodels.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
 class StatsFragment : Fragment() {
+    val TAG = "StatsFragment"
     private lateinit var binding: FragmentStatsBinding
 
     // Used to handle changing the month and year
@@ -42,6 +37,7 @@ class StatsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "Just before binding init")
         binding = FragmentStatsBinding.inflate(layoutInflater)
 
         initUI()
@@ -80,16 +76,44 @@ class StatsFragment : Fragment() {
             )
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             statsViewModel.statistics.collect {
+                Log.d(TAG, "Collecting statistics")
                 // Do graph updates here
             }
         }
 
-        initMonthSpinner()
-        initYearSpinner(currentYear = currentYear)
-        initVariableSpinner()
-        initTypeSpinner()
+        monthSpinner(
+            spinner = binding.monthSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = statsViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope,
+        )
+
+        yearSpinner(
+            spinner = binding.yearSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = statsViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope,
+        )
+
+        variableSpinner(
+            spinner = binding.variableSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = statsViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope,
+        )
+
+        typeSpinner(
+            spinner = binding.typeSpinner,
+            supportViewModel = supportViewModel,
+            mainViewModel = statsViewModel,
+            context = requireContext(),
+            lifecycleScope = lifecycleScope,
+        )
 
         // Click listener for floating action button
         binding.fab.setOnClickListener {
@@ -97,227 +121,5 @@ class StatsFragment : Fragment() {
             val direction = StatsFragmentDirections.actionStatsFragmentToNewStatisticFragment()
             findNavController().navigate(direction)
         }
-    }
-
-    private fun initMonthSpinner() {
-        // list of months for monthSpinner
-        val months = listOf(
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        )
-
-        val monthSpinnerAdapter = ArrayAdapter(
-            requireContext().applicationContext,
-            R.layout.custom_spinner_item,
-            months
-        )
-
-        val currentMonth = supportViewModel.currentMonth.value
-
-        binding.monthSpinner.adapter = monthSpinnerAdapter
-        binding.monthSpinner.setSelection(currentMonth)
-
-        binding.monthSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    // When selecting a month in the spinner list
-                    // get current variableId and type from view model
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        supportViewModel.setCurrentMonth(month = p2 + 1)
-                    }
-
-                    val variableId = statsViewModel.variable.value.variableID
-                    val type = statsViewModel.type.value
-                    val selectedYear = supportViewModel.currentYear.value
-
-                    // Update the new statistics to view model
-                    statsViewModel.getStatisticsBySelection(
-                        variableID = variableId,
-                        type = type,
-                        month = p2 + 1,
-                        year = selectedYear
-                    )
-                }
-
-                // Unused, here to prevent member implementation error
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                }
-            }
-    }
-
-    private fun initYearSpinner(currentYear: Int) {
-        lifecycleScope.launch {
-            // has to collect years to reconstruct an new list of years everytime a new year is added
-            supportViewModel.years.collect {
-                Log.d("collecting", "collecting years")
-                // Inserts current year to database is view model does not have any years
-                // Inserting an already existing year just replaces it so no worries if the view model updates a little late
-                if (supportViewModel.years.value.isEmpty()) {
-                    supportViewModel.insertYear(currentYear)
-                }
-
-                // Converts years from type Year() to type Int
-                val yearsConverted = mutableListOf<Int>()
-                supportViewModel.years.value.forEach { yearsConverted.add(it.year) }
-
-                val yearSpinnerAdapter = ArrayAdapter(
-                    requireContext().applicationContext,
-                    R.layout.custom_spinner_item,
-                    yearsConverted
-                )
-
-                binding.yearSpinner.adapter = yearSpinnerAdapter
-
-                if (yearsConverted.contains(currentYear)) {
-                    binding.yearSpinner.setSelection(yearsConverted.indexOf(currentYear))
-                } else binding.yearSpinner.setSelection(0)
-
-                binding.yearSpinner.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(
-                            p0: AdapterView<*>?,
-                            p1: View?,
-                            p2: Int,
-                            p3: Long
-                        ) {
-                            // Gets the correct year from view model based on index p2
-                            val selectedYear = supportViewModel.years.value[p2].year
-
-                            // Set selection as current year in view model
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                supportViewModel.setCurrentYear(year = selectedYear)
-                            }
-
-                            val variableId = statsViewModel.variable.value.variableID
-                            val type = statsViewModel.type.value
-                            val month = supportViewModel.currentMonth.value
-                            // Updates the workouts into the view model based on selection of month and year
-                            statsViewModel.getStatisticsBySelection(
-                                variableID = variableId,
-                                type = type,
-                                year = selectedYear,
-                                month = month
-                            )
-                        }
-
-                        // Unused, here to prevent member implementation error
-                        override fun onNothingSelected(p0: AdapterView<*>?) {
-                        }
-                    }
-            }
-        }
-    }
-
-    private fun initVariableSpinner() {
-        lifecycleScope.launch {
-            // has to collect variables to reconstruct an new list of variables everytime a new variable is added
-            statsViewModel.variables.collect {
-                // Converts variables from type Variable() to type String,
-                // which is the name of the variable
-                val variablesConverted = mutableListOf<String>()
-                statsViewModel.variables.value.forEach { variablesConverted.add(it.variableName) }
-
-                val variableSpinnerAdapter = ArrayAdapter(
-                    requireContext().applicationContext,
-                    R.layout.custom_spinner_item,
-                    variablesConverted
-                )
-
-                binding.variableSpinner.adapter = variableSpinnerAdapter
-
-                // Set the first element of variables list as the selected variable
-                binding.variableSpinner.setSelection(0)
-
-                binding.variableSpinner.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(
-                            p0: AdapterView<*>?,
-                            p1: View?,
-                            p2: Int,
-                            p3: Long
-                        ) {
-                            // Gets the correct year from view model based on index p2
-                            val year = supportViewModel.currentYear.value
-                            val variables = statsViewModel.variables.value
-                            val variableId = variables[p2].variableID
-                            val type = statsViewModel.type.value
-                            val month = supportViewModel.currentMonth.value
-
-                            // Change the variable in view model as the selected variable
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                statsViewModel.changeVariable(variables[p2])
-                            }
-
-                            // Updates the workouts into the view model based on selection of month and year
-                            statsViewModel.getStatisticsBySelection(
-                                variableID = variableId,
-                                type = type,
-                                year = year,
-                                month = month
-                            )
-                        }
-
-                        // Unused, here to prevent member implementation error
-                        override fun onNothingSelected(p0: AdapterView<*>?) {
-                        }
-                    }
-            }
-        }
-    }
-
-    private fun initTypeSpinner() {
-        val typeSpinnerAdapter = ArrayAdapter(
-            requireContext().applicationContext,
-            R.layout.custom_spinner_item,
-            statsViewModel.getTypes()
-        )
-
-        binding.typeSpinner.adapter = typeSpinnerAdapter
-
-        // Set the selection as the first type
-        binding.typeSpinner.setSelection(0)
-
-        binding.typeSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    p0: AdapterView<*>?,
-                    p1: View?,
-                    p2: Int,
-                    p3: Long
-                ) {
-                    // Gets the correct year from view model based on index p2
-                    val year = supportViewModel.currentYear.value
-                    val variableId = statsViewModel.variable.value.variableID
-                    val selectedType = statsViewModel.getTypes()[p2]
-                    val month = supportViewModel.currentMonth.value
-
-                    // Change the variable in view model as the selected variable
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        statsViewModel.changeType(selectedType)
-                    }
-
-                    // Updates the workouts into the view model based on selection of month and year
-                    statsViewModel.getStatisticsBySelection(
-                        variableID = variableId,
-                        type = selectedType,
-                        year = year,
-                        month = month
-                    )
-                }
-
-                // Unused, here to prevent member implementation error
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                }
-            }
     }
 }

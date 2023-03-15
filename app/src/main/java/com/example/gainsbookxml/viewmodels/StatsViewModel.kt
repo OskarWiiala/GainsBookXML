@@ -1,6 +1,7 @@
 package com.example.gainsbookxml.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -42,8 +43,12 @@ class StatsViewModel(context: Context) : ViewModel() {
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("StatsViewModel init", "inside viewModelScope")
             getVariables()
+            val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
             if (variables.value.isEmpty()) {
+                Log.d("StatsViewModel init", "variables are empty")
                 insertVariable("Bench press")
                 insertVariable("Squat")
                 insertVariable("Deadlift")
@@ -55,24 +60,28 @@ class StatsViewModel(context: Context) : ViewModel() {
                 getStatisticsBySelection(
                     variableID = variable.value.variableID,
                     type = type.value,
-                    month = Calendar.getInstance().get(Calendar.MONTH) + 1,
-                    year = Calendar.getInstance().get(Calendar.YEAR)
+                    month = currentMonth,
+                    year = currentYear
                 )
             } else {
+                Log.d("StatsViewModel init", "variables are NOT empty")
                 _variable.emit(variables.value.first())
                 getStatisticsBySelection(
                     variableID = variable.value.variableID,
                     type = type.value,
-                    month = Calendar.getInstance().get(Calendar.MONTH) + 1,
-                    year = Calendar.getInstance().get(Calendar.YEAR)
+                    month = currentMonth,
+                    year = currentYear
                 )
             }
         }
     }
 
     private suspend fun getVariables() {
+        Log.d("getVariables()", "1")
         val response = dao.getVariables()
+        Log.d("getVariables()", "2")
         _variables.emit(response)
+        Log.d("getVariables()", "3")
     }
 
     suspend fun changeVariable(variable: Variable) {
@@ -99,7 +108,6 @@ class StatsViewModel(context: Context) : ViewModel() {
                 variableName = variableName
             )
             dao.insertVariable(variable = variable)
-            getVariables()
         }
     }
 
