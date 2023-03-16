@@ -29,6 +29,7 @@
     <!--Screen titles-->
     <string name="NewWorkout">New workout</string>
     <string name="EditWorkout">Edit workout</string>
+    <string name="NewStatistic">New statistic</string>
 
     <!--Tools:text-->
     <string name="DefaultDate">31.12.2000</string>
@@ -50,6 +51,7 @@
     <string name="EnterNewVariable">Enter a new variable here</string>
     <string name="EnterUsername">Enter a username here</string>
     <string name="EnterDescription">Enter a description here</string>
+    <string name="EnterStatisticValue">Enter a value here</string>
 
     <!--Decorated text-->
     <string name="WorkoutDate"><u>9.3.2023</u></string>
@@ -60,6 +62,10 @@
     <string name="DeleteWorkoutCD">Delete workout</string>
     <string name="EditWorkoutCD">Edit workout</string>
     <string name="PickDateCD">Edit workout</string>
+    <string name="PickVariableCD">Pick variable</string>
+    <string name="PickTypeCD">Pick type</string>
+    <string name="PickYearCD">Pick year</string>
+    <string name="PickMonthCD">Pick month</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

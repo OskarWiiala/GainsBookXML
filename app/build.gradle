@@ -79,4 +79,7 @@ dependencies {
 
     // Splash screen
     implementation 'androidx.core:core-splashscreen:1.0.0'
+
+    // Graph
+    implementation 'com.jjoe64:graphview:4.2.2'
 }

@@ -1,5 +1,8 @@
 package com.example.gainsbookxml.fragments
 
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -15,6 +19,10 @@ import com.example.gainsbookxml.R
 import com.example.gainsbookxml.databinding.FragmentStatsBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.*
+import com.jjoe64.graphview.GridLabelRenderer
+import com.jjoe64.graphview.series.BarGraphSeries
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
@@ -77,9 +85,37 @@ class StatsFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            statsViewModel.statistics.collect {
+            statsViewModel.statistics.collect { it ->
                 Log.d(TAG, "Collecting statistics")
                 // Do graph updates here
+                // Map the statistics, create a datapoint with x value of day and y value of value and then convert it to array.
+                val list: Array<DataPoint> =
+                    it.map { statistic -> DataPoint(statistic.day.toDouble(), statistic.value) }
+                        .toTypedArray()
+                val series = LineGraphSeries(list)
+                val linePaint = Paint()
+                linePaint.color = ContextCompat.getColor(
+                    requireContext(),
+                    R.color.secondary
+                )
+                linePaint.strokeWidth = 6F
+                series.setCustomPaint(linePaint)
+
+                val size = it.size
+                binding.graphView.removeAllSeries()
+                binding.graphView.gridLabelRenderer.numHorizontalLabels = size
+                binding.graphView.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.BOTH
+                binding.graphView.viewport.setMaxX(31.0)
+                binding.graphView.gridLabelRenderer.setHumanRounding(true)
+                binding.graphView.viewport.isXAxisBoundsManual = true
+                binding.graphView.viewport.isYAxisBoundsManual = true
+                binding.graphView.viewport.setMaxY(series.highestValueY)
+                binding.graphView.viewport.setMinY(series.lowestValueY)
+                binding.graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
+                    requireContext(),
+                    R.color.secondary
+                )
+                binding.graphView.addSeries(series)
             }
         }
 
