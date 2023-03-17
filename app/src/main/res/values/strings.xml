@@ -34,6 +34,7 @@
     <!--Tools:text-->
     <string name="DefaultDate">31.12.2000</string>
     <string name="DefaultExercise">Bench press: 5x5 100 kg 3mr</string>
+    <string name="TimerText">3 m 12 s</string>
 
     <!--Dialog titles-->
     <string name="EditProfileInfo">Edit profile info</string>

@@ -1,60 +1,160 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.gainsbookxml.R
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.example.gainsbookxml.databinding.FragmentTimerBinding
+import com.example.gainsbookxml.utils.TimerProgress
+import com.example.gainsbookxml.utils.timerPopup
+import com.example.gainsbookxml.viewmodels.*
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class TimerFragment : Fragment(), TimerProgress {
+    val TAG = "TimerFragment"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [TimerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class TimerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentTimerBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private val timerViewModel: TimerViewModel by viewModels {
+        TimerViewModelFactory(timerProgress = this@TimerFragment)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_timer, container, false)
+    ): View {
+        binding = FragmentTimerBinding.inflate(layoutInflater)
+        initUI()
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment TimerFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            TimerFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun initUI() {
+        binding.pauseResume = "Pause"
+
+        lifecycleScope.launch {
+            timerViewModel.secondsRemaining.collect {
+                binding.time = "${(it / 60)} m ${(it % 60)} s"
+            }
+        }
+
+        lifecycleScope.launch {
+            timerViewModel.isCountDownVisible.collect {
+                if (it) {
+                    timerViewModel.setVisibility("CountUp", false)
+                    binding.startLayout.visibility = View.GONE
+                    binding.timerLayout.visibility = View.VISIBLE
+                    binding.countDown.visibility = View.VISIBLE
+                    initProgressBar()
                 }
             }
+        }
+
+        lifecycleScope.launch {
+            timerViewModel.isCountUpVisible.collect {
+                if (it) {
+                    timerViewModel.setVisibility("CountDown", false)
+                    binding.startLayout.visibility = View.GONE
+                    binding.timerLayout.visibility = View.VISIBLE
+                    binding.countDown.visibility = View.GONE
+                }
+            }
+        }
+
+        binding.countDownButton.setOnClickListener {
+            timerPopup(
+                timerViewModel = timerViewModel,
+                context = requireContext(),
+                lifecycleScope = lifecycleScope
+            )
+        }
+
+        binding.countUpButton.setOnClickListener {
+            timerViewModel.setVisibility("CountUp", true)
+        }
+
+        binding.stopButton.setOnClickListener {
+            lifecycleScope.launch {
+                handleStop()
+            }
+        }
+
+        binding.pauseButton.setOnClickListener {
+            lifecycleScope.launch {
+                handlePauseOrResume()
+            }
+        }
+
+        binding.restartButton.setOnClickListener {
+            lifecycleScope.launch {
+                handleRestart()
+            }
+        }
+    }
+
+    private fun initProgressBar() {
+        binding.countDown.progress = 100
+    }
+
+    private suspend fun handleStop() {
+        timerViewModel.setIsTimerPaused(value = false)
+        timerViewModel.timer.cancel()
+        binding.pauseResume = "Pause"
+        timerViewModel.setVisibility("CountDown", false)
+        timerViewModel.setVisibility("CountUp", false)
+        timerViewModel.timer.cancel()
+        binding.countDown.visibility = View.GONE
+        binding.timerLayout.visibility = View.GONE
+        binding.startLayout.visibility = View.VISIBLE
+    }
+
+    private suspend fun handlePauseOrResume() {
+        timerViewModel.setIsTimerPaused(value = !timerViewModel.isTimerPaused.value)
+        val isPaused = timerViewModel.isTimerPaused.value
+        val timerType = timerViewModel.timerType.value
+        if (timerType == "CountDown") {
+            if (isPaused) {
+                timerViewModel.setIsTimerPaused(value = true)
+                timerViewModel.timer.cancel()
+                timerViewModel.setCountDownRunning(false)
+                binding.pauseResume = "Resume"
+
+            }
+            if (!isPaused) {
+                timerViewModel.setIsTimerPaused(value = false)
+                timerViewModel.startTimer(
+                    type = "CountDown",
+                    time = timerViewModel.secondsRemaining.value
+                )
+                timerViewModel.setCountDownRunning(true)
+                binding.pauseResume = "Pause"
+            }
+
+        } else if (timerType == "CountUp") {
+            timerViewModel.timer.cancel()
+            timerViewModel.setCountUpRunning(false)
+            binding.pauseResume = "Resume"
+        }
+    }
+
+    private suspend fun handleRestart() {
+        binding.pauseResume = "Pause"
+        timerViewModel.setIsTimerPaused(value = false)
+        timerViewModel.timer.cancel()
+        val time = timerViewModel.customTimeType.value.value
+        val timerType = timerViewModel.timerType.value
+        if (timerType == "CountDown") {
+            timerViewModel.startTimer(type = timerType, time = time)
+        } else if (timerType == "CountUp") {
+
+        }
+    }
+
+    override fun newProgressBarValue(newValue: Int) {
+        Log.d("newProgressBarValue", "value: $newValue")
+        binding.countDown.progress = newValue
     }
 }

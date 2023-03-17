@@ -82,4 +82,7 @@ dependencies {
 
     // Graph
     implementation 'com.jjoe64:graphview:4.2.2'
+
+    // Circular progress bar for timer fragment
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
 }

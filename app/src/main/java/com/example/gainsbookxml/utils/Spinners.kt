@@ -13,6 +13,7 @@ import com.example.gainsbookxml.R
 import com.example.gainsbookxml.viewmodels.LogViewModel
 import com.example.gainsbookxml.viewmodels.StatsViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModel
+import com.example.gainsbookxml.viewmodels.TimerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.security.InvalidParameterException
@@ -281,6 +282,48 @@ fun typeSpinner(
                     year = year,
                     month = month
                 )
+            }
+
+            // Unused, here to prevent member implementation error
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
+}
+
+fun timeSpinner(
+    spinner: AppCompatSpinner,
+    mainViewModel: TimerViewModel,
+    context: Context,
+    lifecycleScope: LifecycleCoroutineScope,
+) {
+    // Converts time types from type CustomTimeType to type String,
+    // which is the time in text
+    val timeTypesConverted = mutableListOf<String>()
+    mainViewModel.customTimeTypes.forEach { timeTypesConverted.add(it.type) }
+
+    val typeSpinnerAdapter = ArrayAdapter(
+        context.applicationContext,
+        R.layout.custom_spinner_item,
+        timeTypesConverted
+    )
+
+    spinner.adapter = typeSpinnerAdapter
+
+    // Set the selection as the first type
+    spinner.setSelection(0)
+
+    spinner.onItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                p0: AdapterView<*>?,
+                p1: View?,
+                p2: Int,
+                p3: Long
+            ) {
+                // Change the timeType in view model as the selected time type
+                lifecycleScope.launch(Dispatchers.IO) {
+                    mainViewModel.setCustomTimeType(mainViewModel.customTimeTypes[p2])
+                }
             }
 
             // Unused, here to prevent member implementation error

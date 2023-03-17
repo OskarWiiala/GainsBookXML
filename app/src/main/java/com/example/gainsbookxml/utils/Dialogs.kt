@@ -11,11 +11,15 @@ import android.view.LayoutInflater
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatSpinner
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.viewmodels.LogViewModel
 import com.example.gainsbookxml.viewmodels.StatsViewModel
 import com.example.gainsbookxml.viewmodels.SupportViewModel
+import com.example.gainsbookxml.viewmodels.TimerViewModel
 import com.google.android.material.button.MaterialButton
+import kotlin.concurrent.timer
 
 fun newYearPopup(supportViewModel: SupportViewModel, context: Context) {
     val TAG = "NewYearPopup"
@@ -249,13 +253,17 @@ fun deletePopup(
         if (type == "exercise") {
             val exercises = supportViewModel?.exercises?.value
             val exercisesList = deleteExercise(
-                exercises = exercises?.toMutableList() ?: emptyList<ExerciseWithIndex>() as MutableList<ExerciseWithIndex>,
+                exercises = exercises?.toMutableList()
+                    ?: emptyList<ExerciseWithIndex>() as MutableList<ExerciseWithIndex>,
                 description = description,
                 exerciseIndex = exerciseIndex
             )
             supportViewModel?.addExercises(exercisesList)
         } else if (type == "workout") {
-            Log.d(TAG, "delete workout, logViewModel: $logViewModel, workoutId: $workoutId, year: $year, month = $month")
+            Log.d(
+                TAG,
+                "delete workout, logViewModel: $logViewModel, workoutId: $workoutId, year: $year, month = $month"
+            )
             logViewModel?.deleteWorkoutByID(workoutID = workoutId, year = year, month = month)
         }
 
@@ -266,3 +274,50 @@ fun deletePopup(
         dialog.cancel()
     }
 }
+
+fun timerPopup(
+    timerViewModel: TimerViewModel,
+    context: Context,
+    lifecycleScope: LifecycleCoroutineScope
+) {
+    val TAG = "TimerPopup"
+    val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+    // sets a custom dialog interface for the popup
+    val li = LayoutInflater.from(context)
+    val view = li.inflate(R.layout.dialog_timer, null)
+
+    val spinner = view.findViewById<AppCompatSpinner>(R.id.time_spinner)
+
+    // Set up the spinner for selecting times
+    timeSpinner(
+        spinner = spinner,
+        mainViewModel = timerViewModel,
+        context = context,
+        lifecycleScope = lifecycleScope
+    )
+
+    // get OK/Cancel buttons
+    val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
+    val btnCancel = view.findViewById<MaterialButton>(R.id.buttonCancel)
+
+    builder.setView(view)
+    builder.setCancelable(true)
+
+    // Puts the popup to the screen
+    val dialog: AlertDialog = builder.create()
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+
+    btnOk.setOnClickListener {
+        timerViewModel.startTimer(
+            type = "CountDown",
+            time = timerViewModel.customTimeType.value.value
+        )
+        timerViewModel.setVisibility("CountDown", true)
+        dialog.cancel()
+    }
+    btnCancel.setOnClickListener {
+        dialog.cancel()
+    }
+}
+

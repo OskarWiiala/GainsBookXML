@@ -85,9 +85,18 @@ class StatsFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            statsViewModel.statistics.collect { it ->
+
+            binding.graphView.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.BOTH
+            binding.graphView.viewport.setMaxX(31.0)
+            binding.graphView.gridLabelRenderer.setHumanRounding(true)
+            binding.graphView.viewport.isXAxisBoundsManual = true
+            binding.graphView.viewport.isYAxisBoundsManual = true
+            binding.graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
+                requireContext(),
+                R.color.secondary
+            )
+            statsViewModel.statistics.collect {
                 Log.d(TAG, "Collecting statistics")
-                // Do graph updates here
                 // Map the statistics, create a datapoint with x value of day and y value of value and then convert it to array.
                 val list: Array<DataPoint> =
                     it.map { statistic -> DataPoint(statistic.day.toDouble(), statistic.value) }
@@ -104,17 +113,8 @@ class StatsFragment : Fragment() {
                 val size = it.size
                 binding.graphView.removeAllSeries()
                 binding.graphView.gridLabelRenderer.numHorizontalLabels = size
-                binding.graphView.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.BOTH
-                binding.graphView.viewport.setMaxX(31.0)
-                binding.graphView.gridLabelRenderer.setHumanRounding(true)
-                binding.graphView.viewport.isXAxisBoundsManual = true
-                binding.graphView.viewport.isYAxisBoundsManual = true
                 binding.graphView.viewport.setMaxY(series.highestValueY)
                 binding.graphView.viewport.setMinY(series.lowestValueY)
-                binding.graphView.gridLabelRenderer.gridColor = ContextCompat.getColor(
-                    requireContext(),
-                    R.color.secondary
-                )
                 binding.graphView.addSeries(series)
             }
         }
