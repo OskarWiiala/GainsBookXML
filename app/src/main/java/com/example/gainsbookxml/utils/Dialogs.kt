@@ -1,25 +1,32 @@
 package com.example.gainsbookxml.utils
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.text.Editable
+import android.net.Uri
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.gainsbookxml.R
-import com.example.gainsbookxml.viewmodels.LogViewModel
-import com.example.gainsbookxml.viewmodels.StatsViewModel
-import com.example.gainsbookxml.viewmodels.SupportViewModel
-import com.example.gainsbookxml.viewmodels.TimerViewModel
+import com.example.gainsbookxml.database.entities.Profile
+import com.example.gainsbookxml.fragments.ProfileFragment
+import com.example.gainsbookxml.viewmodels.*
 import com.google.android.material.button.MaterialButton
-import kotlin.concurrent.timer
+import kotlinx.coroutines.launch
+
 
 fun newYearPopup(supportViewModel: SupportViewModel, context: Context) {
     val TAG = "NewYearPopup"
@@ -321,3 +328,65 @@ fun timerPopup(
     }
 }
 
+fun editProfilePopup(
+    profileViewModel: ProfileViewModel,
+    context: Context,
+    singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
+    lifecycleScope: LifecycleCoroutineScope
+) {
+
+    var imageUriString = ""
+
+    val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+    // sets a custom dialog interface for the popup
+    val li = LayoutInflater.from(context)
+    val view = li.inflate(R.layout.dialog_profile, null)
+
+    val profilePicture = view.findViewById<ImageView>(R.id.image)
+    val nameEditText = view.findViewById<EditText>(R.id.editName)
+    val descriptionEditText = view.findViewById<EditText>(R.id.editDescription)
+
+    // Initially set the image Uri as the one in view model
+    lifecycleScope.launch {
+        profileViewModel.profilePictureTemp.collect {
+            profilePicture.setImageURI(Uri.parse(it))
+            imageUriString = it
+        }
+    }
+
+    // Initially set the ediText from the view model
+    nameEditText.setText(profileViewModel.profile.value.firstOrNull()?.username ?: "null")
+    descriptionEditText.setText(profileViewModel.profile.value.firstOrNull()?.description ?: "null")
+
+    profilePicture.setOnClickListener {
+        singlePhotoPickerLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
+
+    // get OK/Cancel buttons
+    val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
+    val btnCancel = view.findViewById<MaterialButton>(R.id.buttonCancel)
+
+    builder.setView(view)
+    builder.setCancelable(true)
+
+    // Puts the popup to the screen
+    val dialog: AlertDialog = builder.create()
+    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    dialog.show()
+
+    btnOk.setOnClickListener {
+        val profile = Profile(
+            userID = 0,
+            username = nameEditText.text.toString(),
+            description = descriptionEditText.text.toString()
+        )
+        profileViewModel.setProfile(profile)
+        profileViewModel.setProfilePicture(picture = imageUriString)
+        dialog.cancel()
+    }
+    btnCancel.setOnClickListener {
+        dialog.cancel()
+    }
+}

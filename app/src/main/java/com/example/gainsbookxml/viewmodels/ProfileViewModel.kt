@@ -18,8 +18,11 @@ class ProfileViewModel(context: Context) : ViewModel() {
     val profile: StateFlow<List<Profile>> get() = _profile
 
     // never saved to database due to time restraints
-    private val _profilePicture = MutableStateFlow("android.resource://com.example.gainsbookjc/drawable/placeholder_image")
+    private val _profilePicture = MutableStateFlow("android.resource://com.example.gainsbookxml/drawable/placeholder_image")
     val profilePicture: StateFlow<String> get() = _profilePicture
+
+    private val _profilePictureTemp = MutableStateFlow(profilePicture.value)
+    val profilePictureTemp: StateFlow<String> get() = _profilePictureTemp
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,9 +50,20 @@ class ProfileViewModel(context: Context) : ViewModel() {
             _profilePicture.emit(picture)
         }
     }
+
+    fun setProfilePictureTemp(picture: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _profilePictureTemp.emit(picture)
+        }
+    }
 }
 
-inline fun <VM : ViewModel> profileViewModelFactory(crossinline f: () -> VM) =
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = f() as T
+class ProfileViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ProfileViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}

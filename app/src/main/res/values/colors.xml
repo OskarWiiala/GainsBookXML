@@ -13,4 +13,5 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="gray">#808080</color>
     <color name="faded_primary">#80E53838</color>
+    <color name="editTextGray">#E0E0E0</color>
 </resources>

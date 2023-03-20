@@ -74,6 +74,7 @@ class TimerFragment : Fragment(), TimerProgress {
 
         binding.countUpButton.setOnClickListener {
             timerViewModel.setVisibility("CountUp", true)
+            timerViewModel.startTimer(type = "CountUp")
         }
 
         binding.stopButton.setOnClickListener {
@@ -101,14 +102,20 @@ class TimerFragment : Fragment(), TimerProgress {
 
     private suspend fun handleStop() {
         timerViewModel.setIsTimerPaused(value = false)
-        timerViewModel.timer.cancel()
         binding.pauseResume = "Pause"
         timerViewModel.setVisibility("CountDown", false)
         timerViewModel.setVisibility("CountUp", false)
-        timerViewModel.timer.cancel()
         binding.countDown.visibility = View.GONE
         binding.timerLayout.visibility = View.GONE
         binding.startLayout.visibility = View.VISIBLE
+
+        val timerType = timerViewModel.timerType.value
+        if (timerType == "CountDown") {
+            timerViewModel.timer.cancel()
+        } else if (timerType == "CountUp") {
+            timerViewModel.setCountUpRunning(value = false)
+            timerViewModel.resetCountUpSeconds()
+        }
     }
 
     private suspend fun handlePauseOrResume() {
@@ -121,7 +128,6 @@ class TimerFragment : Fragment(), TimerProgress {
                 timerViewModel.timer.cancel()
                 timerViewModel.setCountDownRunning(false)
                 binding.pauseResume = "Resume"
-
             }
             if (!isPaused) {
                 timerViewModel.setIsTimerPaused(value = false)
@@ -134,27 +140,42 @@ class TimerFragment : Fragment(), TimerProgress {
             }
 
         } else if (timerType == "CountUp") {
-            timerViewModel.timer.cancel()
-            timerViewModel.setCountUpRunning(false)
-            binding.pauseResume = "Resume"
+            if (isPaused) {
+                timerViewModel.setIsTimerPaused(value = true)
+                timerViewModel.setCountUpRunning(false)
+                binding.pauseResume = "Resume"
+            }
+            if (!isPaused) {
+                timerViewModel.setIsTimerPaused(value = false)
+                timerViewModel.startTimer(
+                    type = "CountUp",
+                )
+                timerViewModel.setCountUpRunning(true)
+                binding.pauseResume = "Pause"
+            }
         }
     }
 
     private suspend fun handleRestart() {
         binding.pauseResume = "Pause"
-        timerViewModel.setIsTimerPaused(value = false)
-        timerViewModel.timer.cancel()
-        val time = timerViewModel.customTimeType.value.value
         val timerType = timerViewModel.timerType.value
+        timerViewModel.setIsTimerPaused(value = false)
+
         if (timerType == "CountDown") {
+            timerViewModel.timer.cancel()
+            val time = timerViewModel.customTimeType.value.value
             timerViewModel.startTimer(type = timerType, time = time)
         } else if (timerType == "CountUp") {
-
+            timerViewModel.resetCountUpSeconds()
         }
     }
 
     override fun newProgressBarValue(newValue: Int) {
         Log.d("newProgressBarValue", "value: $newValue")
         binding.countDown.progress = newValue
+    }
+
+    override fun newCountUpValue(newValue: Long) {
+        binding.time = "${(newValue / 60)} m ${(newValue % 60)} s"
     }
 }

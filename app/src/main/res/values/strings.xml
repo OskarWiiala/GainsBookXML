@@ -67,6 +67,10 @@
     <string name="PickTypeCD">Pick type</string>
     <string name="PickYearCD">Pick year</string>
     <string name="PickMonthCD">Pick month</string>
+    <string name="ProfilePictureCD">Profile picture</string>
+
+    <!--Profile page-->
+    <string name="About">About</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

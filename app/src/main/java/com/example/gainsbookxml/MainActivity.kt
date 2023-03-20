@@ -1,15 +1,23 @@
 package com.example.gainsbookxml
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.findFragment
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.gainsbookxml.databinding.ActivityMainBinding
+import com.example.gainsbookxml.databinding.FragmentProfileBinding
+import com.example.gainsbookxml.fragments.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -21,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen().apply {
             // Do optional operations here before app loads
         }
-
         setContentView(binding.root)
 
         initNavigation()

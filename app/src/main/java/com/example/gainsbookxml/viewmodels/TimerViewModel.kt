@@ -1,12 +1,14 @@
 package com.example.gainsbookxml.viewmodels
 
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.gainsbookxml.utils.CustomTimeType
 import com.example.gainsbookxml.utils.TimerProgress
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -40,6 +42,9 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
 
     private val _secondsRemaining = MutableStateFlow(customTimeType.value.value)
     val secondsRemaining: StateFlow<Long> get() = _secondsRemaining
+
+    private val _countUpSeconds = MutableStateFlow(0L)
+    val countUpSeconds: StateFlow<Long> get() = _countUpSeconds
 
     private val _isCountDownVisible = MutableStateFlow(false)
     val isCountDownVisible: StateFlow<Boolean> get() = _isCountDownVisible
@@ -77,7 +82,7 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
         _isTimerPaused.emit(value)
     }
 
-    fun startTimer(type: String, time: Long) {
+    fun startTimer(type: String, time: Long = 60) {
         viewModelScope.launch {
             setTimerType(type = type)
             when (timerType.value) {
@@ -93,7 +98,8 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
                             viewModelScope.launch {
                                 _secondsRemaining.emit(p0 / 1000)
                                 // percentage of how much time is left
-                                val newValue = (((p0 / 1000).toFloat() / customTimeType.value.value) * 100).toInt()
+                                val newValue =
+                                    (((p0 / 1000).toFloat() / customTimeType.value.value) * 100).toInt()
                                 timerProgress.newProgressBarValue(newValue = newValue)
                             }
                         }
@@ -101,10 +107,23 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
                 }
                 "CountUp" -> {
                     setCountUpRunning(true)
+                    delay(10L)
+                    while (isCountUpRunning.value) {
+                        delay(1000L)
+                        viewModelScope.launch {
+                            val newValue = countUpSeconds.value + 1L
+                            _countUpSeconds.emit(newValue)
+                            timerProgress.newCountUpValue(newValue = newValue)
+                        }
+                    }
                 }
                 else -> throw InvalidParameterException()
             }
         }
+    }
+
+    suspend fun resetCountUpSeconds() {
+        _countUpSeconds.emit(0L)
     }
 
     fun setCustomTimeType(customTimeType: CustomTimeType) {
@@ -119,7 +138,7 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
         }
     }
 
-    fun setCountUpRunning(value: Boolean) {
+    suspend fun setCountUpRunning(value: Boolean) {
         viewModelScope.launch {
             _isCountUpRunning.emit(value)
         }
