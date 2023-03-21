@@ -1,20 +1,16 @@
 package com.example.gainsbookxml.utils
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,14 +18,17 @@ import androidx.appcompat.widget.AppCompatSpinner
 import androidx.lifecycle.LifecycleCoroutineScope
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.database.entities.Profile
-import com.example.gainsbookxml.fragments.ProfileFragment
 import com.example.gainsbookxml.viewmodels.*
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
-
+/**
+ * Dialog for adding a new year to database. Accepts only integers as input.
+ * @param supportViewModel is used to insert new year into database
+ * @param context is required to build the AlertDialog and inflate layout
+ * @author Oskar Wiiala
+ */
 fun newYearPopup(supportViewModel: SupportViewModel, context: Context) {
-    val TAG = "NewYearPopup"
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
     val li = LayoutInflater.from(context)
@@ -45,29 +44,32 @@ fun newYearPopup(supportViewModel: SupportViewModel, context: Context) {
     val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
     val btnCancel = view.findViewById<MaterialButton>(R.id.buttonCancel)
 
-
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
     btnOk.setOnClickListener {
-        Log.d(TAG, "clicked OK")
+        // Only accepts integers as input
         val input = userInput.text.toString().toIntOrNull()
         if (input != null) supportViewModel.insertYear(input)
         dialog.cancel()
     }
     btnCancel.setOnClickListener {
-        Log.d(TAG, "clicked Cancel")
         dialog.cancel()
     }
 }
 
+/**
+ * Dialog for adding a new variable to database.
+ * @param statsViewModel is used to insert new variable into database
+ * @param context is required to build the AlertDialog and inflate layout
+ * @author Oskar Wiiala
+ */
 fun newVariablePopup(statsViewModel: StatsViewModel, context: Context) {
-    val TAG = "NewvariablePopup"
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
     val li = LayoutInflater.from(context)
@@ -86,38 +88,42 @@ fun newVariablePopup(statsViewModel: StatsViewModel, context: Context) {
     val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
     val btnCancel = view.findViewById<MaterialButton>(R.id.buttonCancel)
 
-
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
     btnOk.setOnClickListener {
-        Log.d(TAG, "clicked OK")
         val input = userInput.text.toString()
         statsViewModel.insertVariable(input)
         dialog.cancel()
     }
     btnCancel.setOnClickListener {
-        Log.d(TAG, "clicked Cancel")
         dialog.cancel()
     }
 }
 
+/**
+ * Dialog for adding a new exercise to the list of exercises in NewWorkoutFragment or EditWorkoutFragment.
+ * @param supportViewModel is used to update the list of exercises
+ * @param context is required to build the AlertDialog and inflate layout
+ * @param type accept only "new" and "edit"
+ * @param description the description of the exercise being edited
+ * @param exerciseIndex the index of the exercise being edited
+ * @author Oskar Wiiala
+ */
 fun newExercisePopup(
     supportViewModel: SupportViewModel,
     context: Context,
     type: String,
-    description: String,
-    exerciseIndex: Int
+    description: String = "",
+    exerciseIndex: Int = 0
 ) {
-    val TAG = "NewExercisePopup"
-
-    // exercises
     val exercises = supportViewModel.exercises.value
+
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
     val li = LayoutInflater.from(context)
@@ -142,18 +148,18 @@ fun newExercisePopup(
 
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
     btnOk.setOnClickListener {
-        Log.d(TAG, "clicked OK")
         // Copies the contents of exercises from the view model to a new list
         var exercisesList =
             mutableListOf(ExerciseWithIndex(description = "fail", index = 0))
 
+        // Updates the exercise list based on type
         if (type == "new") {
             exercisesList = newExercise(
                 exercises = exercises.toMutableList(),
@@ -171,15 +177,19 @@ fun newExercisePopup(
         // Finally recreates the exercises in the view model by adding a new list
         // containing all of the exercises
         supportViewModel.addExercises(exercisesList)
-
         dialog.cancel()
     }
     btnCancel.setOnClickListener {
-        Log.d(TAG, "clicked Cancel")
         dialog.cancel()
     }
 }
 
+/**
+ * Dialog for picking a specific date on a calendar.
+ * @param supportViewModel is used to update the date
+ * @param context is required to build the AlertDialog and inflate layout
+ * @author Oskar Wiiala
+ */
 fun pickDatePopup(supportViewModel: SupportViewModel, context: Context) {
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
@@ -190,8 +200,8 @@ fun pickDatePopup(supportViewModel: SupportViewModel, context: Context) {
     val month = supportViewModel.date.value.month - 1
     val year = supportViewModel.date.value.year
 
-    // get date picker
     val datePicker = view.findViewById<DatePicker>(R.id.datePicker)
+    // Gives the datePicker initial day/month/year values
     datePicker.init(year, month, day, null)
 
     // get OK/Cancel buttons
@@ -206,14 +216,12 @@ fun pickDatePopup(supportViewModel: SupportViewModel, context: Context) {
     dialog.show()
 
     btnOk.setOnClickListener {
-
         val newDate = WorkoutDate(
             day = datePicker.dayOfMonth,
             month = datePicker.month + 1,
             year = datePicker.year
         )
         supportViewModel.setDate(newDate)
-
         dialog.cancel()
     }
     btnCancel.setOnClickListener {
@@ -221,6 +229,19 @@ fun pickDatePopup(supportViewModel: SupportViewModel, context: Context) {
     }
 }
 
+/**
+ * Dialog for deleting an item. Currently only used to delete an exercise from a list or a workout from the database.
+ * @param supportViewModel is used to update the list of exercises
+ * @param logViewModel is used to delete a workout from the database
+ * @param workoutId id of the workout being deleted
+ * @param year year of the workout
+ * @param month month of the workout
+ * @param context is required to build the AlertDialog and inflate layout
+ * @param type accept only "exercise" or "workout"
+ * @param description the description of the exercise being deleted
+ * @param exerciseIndex the index of the exercise being deleted
+ * @author Oskar Wiiala
+ */
 fun deletePopup(
     supportViewModel: SupportViewModel?,
     logViewModel: LogViewModel? = null,
@@ -232,16 +253,15 @@ fun deletePopup(
     exerciseIndex: Int = 0,
     type: String = "exercise",
 ) {
-    val TAG = "deletePopup"
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
     val li = LayoutInflater.from(context)
     val view = li.inflate(R.layout.dialog_delete, null)
 
+    // Set title based on type
     val dialogTitle = view.findViewById<TextView>(R.id.dialogTitle)
     if (type == "exercise") dialogTitle.text = context.getString(R.string.DeleteExercise)
     else if (type == "workout") dialogTitle.text = context.getString(R.string.DeleteWorkout)
-
 
     // get OK/Cancel buttons
     val btnOk = view.findViewById<MaterialButton>(R.id.buttonOk)
@@ -249,14 +269,14 @@ fun deletePopup(
 
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
     btnOk.setOnClickListener {
-
+        // Deletion of exercise or workout
         if (type == "exercise") {
             val exercises = supportViewModel?.exercises?.value
             val exercisesList = deleteExercise(
@@ -267,14 +287,8 @@ fun deletePopup(
             )
             supportViewModel?.addExercises(exercisesList)
         } else if (type == "workout") {
-            Log.d(
-                TAG,
-                "delete workout, logViewModel: $logViewModel, workoutId: $workoutId, year: $year, month = $month"
-            )
             logViewModel?.deleteWorkoutByID(workoutID = workoutId, year = year, month = month)
         }
-
-
         dialog.cancel()
     }
     btnCancel.setOnClickListener {
@@ -282,12 +296,18 @@ fun deletePopup(
     }
 }
 
+/**
+ * Dialog for picking a specific time from a dropdown between 10 seconds and 15 minutes. Used in TimerFragment.
+ * @param timerViewModel is used to set the time and visibility of count down timer
+ * @param context is required to build the AlertDialog and inflate layout
+ * @param lifecycleScope is required for timeSpinner
+ * @author Oskar Wiiala
+ */
 fun timerPopup(
     timerViewModel: TimerViewModel,
     context: Context,
     lifecycleScope: LifecycleCoroutineScope
 ) {
-    val TAG = "TimerPopup"
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
     // sets a custom dialog interface for the popup
     val li = LayoutInflater.from(context)
@@ -309,9 +329,9 @@ fun timerPopup(
 
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
@@ -328,13 +348,20 @@ fun timerPopup(
     }
 }
 
+/**
+ * Dialog for editing profile info. Includes a photo, username and user description.
+ * @param profileViewModel is used to update profile info and profile photo in the dialog
+ * @param context is required to build the AlertDialog and inflate layout
+ * @param singlePhotoPickerLauncher used to launch photo picker
+ * @param lifecycleScope is required for collecting preview photo from view model
+ * @author Oskar Wiiala
+ */
 fun editProfilePopup(
     profileViewModel: ProfileViewModel,
     context: Context,
     singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>,
     lifecycleScope: LifecycleCoroutineScope
 ) {
-
     var imageUriString = ""
 
     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
@@ -346,10 +373,12 @@ fun editProfilePopup(
     val nameEditText = view.findViewById<EditText>(R.id.editName)
     val descriptionEditText = view.findViewById<EditText>(R.id.editDescription)
 
-    // Initially set the image Uri as the one in view model
+    // Listens for changes in the view model and updates preview photo based on changes
     lifecycleScope.launch {
         profileViewModel.profilePictureTemp.collect {
             profilePicture.setImageURI(Uri.parse(it))
+
+            // Is used to used to update real profile photo
             imageUriString = it
         }
     }
@@ -358,6 +387,7 @@ fun editProfilePopup(
     nameEditText.setText(profileViewModel.profile.value.firstOrNull()?.username ?: "null")
     descriptionEditText.setText(profileViewModel.profile.value.firstOrNull()?.description ?: "null")
 
+    // Launch photo picker when clicking on preview photo
     profilePicture.setOnClickListener {
         singlePhotoPickerLauncher.launch(
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -370,9 +400,9 @@ fun editProfilePopup(
 
     builder.setView(view)
     builder.setCancelable(true)
-
-    // Puts the popup to the screen
     val dialog: AlertDialog = builder.create()
+
+    // Makes the dialog window transparent so that the red rounded corners look proper
     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     dialog.show()
 
@@ -382,6 +412,8 @@ fun editProfilePopup(
             username = nameEditText.text.toString(),
             description = descriptionEditText.text.toString()
         )
+
+        // Update profile info and photo
         profileViewModel.setProfile(profile)
         profileViewModel.setProfilePicture(picture = imageUriString)
         dialog.cancel()

@@ -1,6 +1,5 @@
-package com.example.gainsbookxml
+package com.example.gainsbookxml.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,6 +10,8 @@ import com.example.gainsbookxml.databinding.WorkoutCardBinding
 import com.example.gainsbookxml.utils.WorkoutClickListener
 import com.example.gainsbookxml.utils.WorkoutItem
 import com.example.gainsbookxml.viewmodels.LogViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 
 /**
  * Custom list adapter for workouts.
@@ -39,10 +40,8 @@ class WorkoutListAdapter(
         }
 
         fun bind(item: WorkoutWithExercises, clickListener: WorkoutClickListener) {
-            val TAG = "onBindViewHolder"
-
             // Date to be displayed at the top of workout_card
-            binding.date = "<u>${item.workout.day}.${item.workout.month}.${item.workout.year}</u>"
+            binding.date = "${item.workout.day}.${item.workout.month}.${item.workout.year}"
             val exercisePreviews = item.exercises.take(3)
             // Card displays first three exercises as previews
             binding.exercisePreview1 = exercisePreviews.getOrNull(0)?.description ?: ""
@@ -51,12 +50,10 @@ class WorkoutListAdapter(
 
             // Click listener for clicking card
             binding.workoutCard.setOnClickListener {
-                Log.d(TAG, "clicked on card with item: $item")
                 clickListener.onViewClick(item.workout.workoutID)
             }
             // Click listener for clicking delete button
             binding.deleteWorkoutButton.setOnClickListener {
-                Log.d(TAG, "clicked delete button with item: $item")
                 clickListener.onDeleteClick(
                     workoutId = item.workout.workoutID,
                     year = item.workout.year,
@@ -66,12 +63,10 @@ class WorkoutListAdapter(
 
             // Click listener for clicking edit button
             binding.editWorkoutButton.setOnClickListener {
-                Log.d(TAG, "clicked edit button with item: $item")
                 clickListener.onEditClick(workoutId = item.workout.workoutID)
             }
         }
     }
-
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(
@@ -81,14 +76,10 @@ class WorkoutListAdapter(
         return ViewHolder.from(parent)
     }
 
-
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val TAG = "onBindViewHolder"
-
         when (holder) {
             is ViewHolder -> {
-                Log.d(TAG, "is RecyclerView.ViewHolder, position: $position")
                 val item = logViewModel.workouts.value[position]
                 holder.bind(item = item, clickListener = clickListener)
             }
@@ -97,7 +88,6 @@ class WorkoutListAdapter(
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        Log.d("getItemCount", "size of workouts: ${logViewModel.workouts.value.size}")
         return logViewModel.workouts.value.size
     }
 }

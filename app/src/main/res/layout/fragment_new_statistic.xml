@@ -98,10 +98,18 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
                 android:autofillHints="none"
+                android:background="@drawable/edit_text_background"
                 android:hint="@string/EnterStatisticValue"
                 android:inputType="number" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:background="@color/black" />
         </LinearLayout>
 
         <LinearLayout
@@ -128,7 +136,6 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:text="@string/Cancel" />
-
         </LinearLayout>
     </LinearLayout>
 </layout>

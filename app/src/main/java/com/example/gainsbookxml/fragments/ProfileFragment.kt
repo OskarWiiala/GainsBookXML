@@ -2,12 +2,10 @@ package com.example.gainsbookxml.fragments
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,24 +17,26 @@ import com.example.gainsbookxml.viewmodels.ProfileViewModel
 import com.example.gainsbookxml.viewmodels.ProfileViewModelFactory
 import kotlinx.coroutines.launch
 
+/**
+ * This fragment is used to display and edit user profile information, such as username, user description and photo
+ * @author Oskar Wiiala
+ */
 class ProfileFragment : Fragment() {
-    val TAG = "ProfileFragment"
     private lateinit var binding: FragmentProfileBinding
     private lateinit var singlePhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Launcher for picking a single photo with result callback
         singlePhotoPickerLauncher = registerForActivityResult(
-            ActivityResultContracts.PickVisualMedia(),
-            ActivityResultCallback<Uri?> {
-                // Add same code that you want to add in onActivityResult method
-                profileViewModel.setProfilePictureTemp(it.toString())
-            })
-
+            ActivityResultContracts.PickVisualMedia()
+        ) {
+            // Do this when photo is picked
+            profileViewModel.setProfilePictureTemp(it.toString())
+        }
     }
 
-    // Used to handle changing the month and year
     private val profileViewModel: ProfileViewModel by viewModels {
         ProfileViewModelFactory(requireContext())
     }
@@ -54,15 +54,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initUI() {
+        // Update profile photo whenever it is updated in the view model
         lifecycleScope.launch {
             profileViewModel.profilePicture.collect {
                 val newUri = Uri.parse(it)
-                Log.d("TAG", "in collect pic: $it")
                 binding.uri = newUri
-                /*binding.profilePicture.setImageURI(Uri.parse(it))*/
             }
         }
 
+        // Update username and user description whenever it is updated in the view model
         lifecycleScope.launch {
             profileViewModel.profile.collect {
                 val newUserName = it.firstOrNull()?.username ?: "null"

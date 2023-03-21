@@ -23,6 +23,7 @@
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:background="@drawable/round_outline"
+        android:contentDescription="@string/ProfilePictureCD"
         android:src="@drawable/placeholder_image"
         tools:src="@drawable/placeholder_image" />
 
@@ -38,6 +39,7 @@
             android:background="@drawable/edit_text_background"
             android:hint="@string/EnterUsername"
             tools:text="Oskar Wiiala" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -51,6 +53,7 @@
             android:background="@drawable/edit_text_background"
             android:hint="@string/EnterUsername"
             tools:text="I like to lift weights and stuff" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -79,5 +82,4 @@
             android:layout_marginStart="20dp"
             android:text="@string/Cancel" />
     </LinearLayout>
-
 </LinearLayout>

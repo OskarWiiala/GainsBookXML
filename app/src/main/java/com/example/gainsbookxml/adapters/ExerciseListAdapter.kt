@@ -1,8 +1,8 @@
 package com.example.gainsbookxml.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +10,9 @@ import com.example.gainsbookxml.databinding.ExerciseCardBinding
 import com.example.gainsbookxml.databinding.ExerciseItemBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.SupportViewModel
+import com.example.gainsbookxml.viewmodels.ViewWorkoutViewModel
+import kotlinx.coroutines.flow.first
+import java.security.InvalidParameterException
 
 /**
  * Custom list adapter for exercises.
@@ -17,18 +20,16 @@ import com.example.gainsbookxml.viewmodels.SupportViewModel
  * Uses two types of ViewHolders, ItemViewHolder and CardViewHolder.
  * ItemViewHolder displays a very basic text view with the exercise.
  * CardViewHolder displays a fancy card with a red border and edit/delete buttons
- * @param supportViewModel Used for handling dates and exercises
+ * @param viewModel Used for handling dates and exercises
  * @param clickListener used to call an interface function for edit/delete functions
  * @param type pass item or card. With item, ItemViewHolder is loaded, with card, CardViewHolder is loaded.
  * @author Oskar Wiiala
  */
-class ExerciseListAdapter(
-    private val supportViewModel: SupportViewModel,
+class ExerciseListAdapter<T: ViewModel>(
+    private val viewModel: T,
     private val clickListener: ExerciseClickListener?,
     private val type: String
 ) : ListAdapter<ExerciseItem, RecyclerView.ViewHolder>(ExerciseItemCallBack()) {
-    val TAG = "ExerciseListAdapter"
-
     // View holder for ViewWorkoutFragment
     // View holder holds a simple text view
     class ItemViewHolder(private val binding: ExerciseItemBinding) :
@@ -72,8 +73,6 @@ class ExerciseListAdapter(
             item: ExerciseWithIndex,
             clickListener: ExerciseClickListener?
         ) {
-            val TAG = "onBindViewHolder"
-
             // binding.exercise is a data variable used to display the exercise as text
             binding.exercise = item.description
 
@@ -103,7 +102,6 @@ class ExerciseListAdapter(
         parent: ViewGroup,
         viewType: Int
     ): RecyclerView.ViewHolder {
-        Log.d(TAG, "viewType: $viewType")
         return when (type) {
             // Basic text view holder
             "item" -> ItemViewHolder.from(parent)
@@ -115,20 +113,20 @@ class ExerciseListAdapter(
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val TAG = "onBindViewHolder"
-
         when (holder) {
             is CardViewHolder -> {
+                if(viewModel !is SupportViewModel) throw InvalidParameterException()
                 // The specific exercise with index item based on position in list
-                val item = supportViewModel.exercises.value[position]
+                val item = viewModel.exercises.value[position]
                 holder.bind(
                     item = item,
                     clickListener = clickListener
                 )
             }
             is ItemViewHolder -> {
+                if(viewModel !is ViewWorkoutViewModel) throw InvalidParameterException()
                 // Same as in CardViewHolder but with just the exercise description
-                val exercise = supportViewModel.exercises.value[position].description
+                val exercise = viewModel.workout.value.first().exercises[position].description
                 holder.bind(exercise = exercise)
             }
         }
@@ -136,8 +134,9 @@ class ExerciseListAdapter(
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
-        Log.d("getItemCount", "size of exercises: ${supportViewModel.exercises.value.size}")
-        return supportViewModel.exercises.value.size
+        return if (viewModel is SupportViewModel) viewModel.exercises.value.size
+        else if(viewModel is ViewWorkoutViewModel) viewModel.workout.value.first().exercises.size
+        else throw InvalidParameterException()
     }
 }
 

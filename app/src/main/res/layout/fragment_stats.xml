@@ -142,9 +142,5 @@
                 android:src="@drawable/plus_icon_24"
                 app:tint="@color/white" />
         </LinearLayout>
-
-
     </LinearLayout>
-
-
 </LinearLayout>

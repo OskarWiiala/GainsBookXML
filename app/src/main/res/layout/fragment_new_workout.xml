@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.NewWorkoutFragment">
 
@@ -48,7 +47,6 @@
                 android:contentDescription="@string/PickDateCD"
                 android:padding="8dp"
                 android:src="@drawable/edit_calendar_icon_24" />
-
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -87,7 +85,6 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:text="@string/Cancel" />
-
         </LinearLayout>
     </LinearLayout>
 </layout>

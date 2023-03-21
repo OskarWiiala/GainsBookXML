@@ -83,5 +83,4 @@
             android:text="@string/Edit"
             app:icon="@drawable/edit_icon_24" />
     </LinearLayout>
-
 </layout>

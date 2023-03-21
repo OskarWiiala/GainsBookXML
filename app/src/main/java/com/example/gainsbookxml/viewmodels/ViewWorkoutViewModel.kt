@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 /**
  * @author Oskar Wiiala
  * @param context
- * View model for ViewWorkoutScreeb
+ * View model for ViewWorkoutFragment
  */
 class ViewWorkoutViewModel(context: Context) : ViewModel() {
     private val dao = AppDatabase.getInstance(context).appDao
@@ -31,7 +31,12 @@ class ViewWorkoutViewModel(context: Context) : ViewModel() {
     }
 }
 
-inline fun <VM : ViewModel> viewExerciseViewModelFactory(crossinline f: () -> VM) =
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = f() as T
+class ViewWorkoutViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ViewWorkoutViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return ViewWorkoutViewModel(context) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
+}

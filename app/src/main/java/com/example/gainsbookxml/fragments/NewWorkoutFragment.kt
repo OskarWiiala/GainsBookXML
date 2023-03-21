@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +22,6 @@ import java.util.*
  * @author Oskar Wiiala
  */
 class NewWorkoutFragment : Fragment(), ExerciseClickListener {
-    val TAG = "NewWorkoutFragment"
-
     private lateinit var binding: FragmentNewWorkoutBinding
 
     private val supportViewModel: SupportViewModel by viewModels {
@@ -76,7 +73,7 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
             layoutManager = LinearLayoutManager(context)
             adapter =
                 ExerciseListAdapter(
-                    supportViewModel = supportViewModel,
+                    viewModel = supportViewModel,
                     clickListener = this@NewWorkoutFragment,
                     type = "card"
                 )
@@ -86,7 +83,7 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
             lifecycleScope.launch {
                 supportViewModel.exercises.collect {
                     // quick and dirty
-                    (adapter as ExerciseListAdapter).notifyDataSetChanged()
+                    (adapter as ExerciseListAdapter<*>).notifyDataSetChanged()
                 }
             }
         }
@@ -106,7 +103,6 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
         // OK button, which adds a new workout with exercises to database via view model
         // And then navigates back to LogFragment
         binding.buttonOk.setOnClickListener {
-            Log.d(TAG, "clicked OK")
             supportViewModel.addWorkout(
                 exercises = supportViewModel.exercises.value,
                 day = supportViewModel.date.value.day,
@@ -119,7 +115,6 @@ class NewWorkoutFragment : Fragment(), ExerciseClickListener {
 
         // Cancel button, navigates back to LogFragment
         binding.buttonCancel.setOnClickListener {
-            Log.d(TAG, "clicked cancel")
             val direction = NewWorkoutFragmentDirections.actionNewWorkoutFragmentToLogFragment()
             findNavController().navigate(direction)
         }

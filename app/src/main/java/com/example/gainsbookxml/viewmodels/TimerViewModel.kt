@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.viewmodels
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import kotlinx.coroutines.launch
 import java.security.InvalidParameterException
 
 class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
-    val TAG = "TimerViewModel"
 
     lateinit var timer: CountDownTimer
 
@@ -38,13 +36,13 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
     val isCountDownRunning: StateFlow<Boolean> get() = _isCountDownRunning
 
     private val _isCountUpRunning = MutableStateFlow(false)
-    val isCountUpRunning: StateFlow<Boolean> get() = _isCountUpRunning
+    private val isCountUpRunning: StateFlow<Boolean> get() = _isCountUpRunning
 
     private val _secondsRemaining = MutableStateFlow(customTimeType.value.value)
     val secondsRemaining: StateFlow<Long> get() = _secondsRemaining
 
     private val _countUpSeconds = MutableStateFlow(0L)
-    val countUpSeconds: StateFlow<Long> get() = _countUpSeconds
+    private val countUpSeconds: StateFlow<Long> get() = _countUpSeconds
 
     private val _isCountDownVisible = MutableStateFlow(false)
     val isCountDownVisible: StateFlow<Boolean> get() = _isCountDownVisible
@@ -88,6 +86,7 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
             when (timerType.value) {
                 "CountDown" -> {
                     setCountDownRunning(true)
+                    // Create a CountDownTimer object with start value and countdown interval every second
                     timer = object : CountDownTimer(time * 1000, 1000) {
                         override fun onFinish() {
                             setCountDownRunning(false)
@@ -100,6 +99,7 @@ class TimerViewModel(private val timerProgress: TimerProgress) : ViewModel() {
                                 // percentage of how much time is left
                                 val newValue =
                                     (((p0 / 1000).toFloat() / customTimeType.value.value) * 100).toInt()
+                                // Set new value for progress bar
                                 timerProgress.newProgressBarValue(newValue = newValue)
                             }
                         }

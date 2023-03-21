@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,8 +25,6 @@ import kotlinx.coroutines.launch
  * @author Oskar Wiiala
  */
 class EditWorkoutFragment : Fragment(), ExerciseClickListener {
-    val TAG = "EditWorkoutFragment"
-
     // Arguments that were passed when navigating here
     // Should only have workoutId
     private val args: EditWorkoutFragmentArgs by navArgs()
@@ -75,7 +72,7 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             layoutManager = LinearLayoutManager(context)
             adapter =
                 ExerciseListAdapter(
-                    supportViewModel = supportViewModel,
+                    viewModel = supportViewModel,
                     clickListener = this@EditWorkoutFragment,
                     type = "card"
                 )
@@ -85,7 +82,7 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             lifecycleScope.launch {
                 supportViewModel.exercises.collect {
                     // quick and dirty
-                    (adapter as ExerciseListAdapter).notifyDataSetChanged()
+                    (adapter as ExerciseListAdapter<*>).notifyDataSetChanged()
                 }
             }
         }
@@ -105,7 +102,6 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
         // OK button, which adds a new workout with exercises to database via view model
         // And then navigates back to LogFragment
         binding.buttonOk.setOnClickListener {
-            Log.d(TAG, "clicked OK")
             supportViewModel.addWorkout(
                 workoutID = args.workoutId,
                 exercises = supportViewModel.exercises.value,
@@ -114,13 +110,14 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
                 year = supportViewModel.date.value.year,
                 type = "delete"
             )
+            // Give the view model some time to update the state of workouts before accessing it
+            Thread.sleep(10L)
             val direction = EditWorkoutFragmentDirections.actionEditWorkoutFragmentToLogFragment()
             findNavController().navigate(direction)
         }
 
         // Cancel button, navigates back to LogFragment
         binding.buttonCancel.setOnClickListener {
-            Log.d(TAG, "clicked cancel")
             val direction = EditWorkoutFragmentDirections.actionEditWorkoutFragmentToLogFragment()
             findNavController().navigate(direction)
         }
@@ -148,5 +145,4 @@ class EditWorkoutFragment : Fragment(), ExerciseClickListener {
             exerciseIndex = exerciseIndex
         )
     }
-
 }

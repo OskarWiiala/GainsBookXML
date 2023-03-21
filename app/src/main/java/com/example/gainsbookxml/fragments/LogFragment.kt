@@ -1,19 +1,15 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.gainsbookxml.R
-import com.example.gainsbookxml.WorkoutListAdapter
+import com.example.gainsbookxml.adapters.WorkoutListAdapter
 import com.example.gainsbookxml.databinding.FragmentLogBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.LogViewModel
@@ -85,6 +81,7 @@ class LogFragment : Fragment(), WorkoutClickListener {
             )
         }
 
+        // For selecting month
         monthSpinner(
             spinner = binding.monthSpinner,
             supportViewModel = supportViewModel,
@@ -93,6 +90,7 @@ class LogFragment : Fragment(), WorkoutClickListener {
             lifecycleScope = lifecycleScope
         )
 
+        // For selecting year
         yearSpinner(
             spinner = binding.yearSpinner,
             supportViewModel = supportViewModel,

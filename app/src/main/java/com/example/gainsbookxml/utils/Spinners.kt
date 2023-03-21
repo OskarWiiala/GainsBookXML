@@ -1,14 +1,12 @@
 package com.example.gainsbookxml.utils
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
 import com.example.gainsbookxml.R
 import com.example.gainsbookxml.viewmodels.LogViewModel
 import com.example.gainsbookxml.viewmodels.StatsViewModel
@@ -18,6 +16,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.security.InvalidParameterException
 
+/**
+ * Dropdown spinner for selecting a month
+ * @param spinner a reference to the AppCompatSpinner to be used
+ * @param supportViewModel used to get and set the current month. Also used to get the year from the view model
+ * @param mainViewModel has to be a LogViewModel or StatsViewModel. Since this spinner is reusable, it is used in multiple fragments
+ * @param context needed for creating the spinner adapter
+ * @param lifecycleScope needed for coroutine operations
+ * @author Oskar Wiiala
+ */
 fun <T : ViewModel> monthSpinner(
     spinner: AppCompatSpinner,
     supportViewModel: SupportViewModel,
@@ -25,8 +32,9 @@ fun <T : ViewModel> monthSpinner(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
 ) {
-    val TAG = "monthSpinner"
+    // Enforces proper mainViewModel types
     if (mainViewModel !is StatsViewModel && mainViewModel !is LogViewModel) throw InvalidParameterException()
+
     val months = listOf(
         "January",
         "February",
@@ -56,15 +64,16 @@ fun <T : ViewModel> monthSpinner(
     spinner.onItemSelectedListener =
         object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    supportViewModel.setCurrentMonth(month = p2 + 1)
-                }
-
-                val year = supportViewModel.currentYear.value
                 val selectedMonth = p2 + 1
+                val year = supportViewModel.currentYear.value
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    supportViewModel.setCurrentMonth(month = selectedMonth)
+                }
 
                 when (mainViewModel) {
                     is LogViewModel -> {
+                        // Updates list of workouts to view model
                         mainViewModel.getWorkoutsByYearMonth(
                             year = year,
                             month = selectedMonth
@@ -91,6 +100,15 @@ fun <T : ViewModel> monthSpinner(
         }
 }
 
+/**
+ * Dropdown spinner for selecting a year
+ * @param spinner a reference to the AppCompatSpinner to be used
+ * @param supportViewModel used to get and set the current year. Also used to get the month from the view model
+ * @param mainViewModel has to be a LogViewModel or StatsViewModel. Since this spinner is reusable, it is used in multiple fragments
+ * @param context needed for creating the spinner adapter
+ * @param lifecycleScope needed for coroutine operations
+ * @author Oskar Wiiala
+ */
 fun <T : ViewModel> yearSpinner(
     spinner: AppCompatSpinner,
     supportViewModel: SupportViewModel,
@@ -98,9 +116,10 @@ fun <T : ViewModel> yearSpinner(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
 ) {
-    val TAG = "yearSpinner"
     if (mainViewModel !is StatsViewModel && mainViewModel !is LogViewModel) throw InvalidParameterException()
+
     val currentYear = supportViewModel.currentYear.value
+
     lifecycleScope.launch {
         // has to collect years to reconstruct an new list of years everytime a new year is added
         supportViewModel.years.collect {
@@ -122,6 +141,7 @@ fun <T : ViewModel> yearSpinner(
 
             spinner.adapter = yearSpinnerAdapter
 
+            // Sets the selected year as current year, if current year exists
             if (yearsConverted.contains(currentYear)) {
                 spinner.setSelection(yearsConverted.indexOf(currentYear))
             } else spinner.setSelection(0)
@@ -150,7 +170,6 @@ fun <T : ViewModel> yearSpinner(
                                 )
                             }
                             is StatsViewModel -> {
-                                Log.d(TAG, "Doing the statsViewModel thingy")
                                 val variableId = mainViewModel.variable.value.variableID
                                 val type = mainViewModel.type.value
 
@@ -173,6 +192,15 @@ fun <T : ViewModel> yearSpinner(
     }
 }
 
+/**
+ * Dropdown spinner for selecting a variable
+ * @param spinner a reference to the AppCompatSpinner to be used
+ * @param supportViewModel used to get year and month
+ * @param mainViewModel
+ * @param context needed for creating the spinner adapter
+ * @param lifecycleScope needed for coroutine operations
+ * @author Oskar Wiiala
+ */
 fun variableSpinner(
     spinner: AppCompatSpinner,
     supportViewModel: SupportViewModel,
@@ -180,8 +208,6 @@ fun variableSpinner(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
 ) {
-    val TAG = "variableSpinner"
-
     lifecycleScope.launch {
         // has to collect variables to reconstruct an new list of variables everytime a new variable is added
         mainViewModel.variables.collect {
@@ -238,6 +264,15 @@ fun variableSpinner(
     }
 }
 
+/**
+ * Dropdown spinner for selecting a type
+ * @param spinner a reference to the AppCompatSpinner to be used
+ * @param supportViewModel used to get the current month and year
+ * @param mainViewModel
+ * @param context needed for creating the spinner adapter
+ * @param lifecycleScope needed for coroutine operations
+ * @author Oskar Wiiala
+ */
 fun typeSpinner(
     spinner: AppCompatSpinner,
     supportViewModel: SupportViewModel,
@@ -290,6 +325,14 @@ fun typeSpinner(
         }
 }
 
+/**
+ * Dropdown spinner for selecting a time
+ * @param spinner a reference to the AppCompatSpinner to be used
+ * @param mainViewModel
+ * @param context needed for creating the spinner adapter
+ * @param lifecycleScope needed for coroutine operations
+ * @author Oskar Wiiala
+ */
 fun timeSpinner(
     spinner: AppCompatSpinner,
     mainViewModel: TimerViewModel,

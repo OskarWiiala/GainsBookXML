@@ -12,8 +12,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.gainsbookxml.adapters.ExerciseListAdapter
 import com.example.gainsbookxml.databinding.FragmentViewWorkoutBinding
-import com.example.gainsbookxml.viewmodels.SupportViewModel
-import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
+import com.example.gainsbookxml.viewmodels.ViewWorkoutViewModel
+import com.example.gainsbookxml.viewmodels.ViewWorkoutViewModelFactory
 import kotlinx.coroutines.launch
 
 /**
@@ -21,14 +21,12 @@ import kotlinx.coroutines.launch
  * @author Oskar Wiiala
  */
 class ViewWorkoutFragment : Fragment() {
-    val TAG = "EditWorkoutFragment"
-
     private val args: ViewWorkoutFragmentArgs by navArgs()
 
     private lateinit var binding: FragmentViewWorkoutBinding
 
-    private val supportViewModel: SupportViewModel by viewModels {
-        SupportViewModelFactory(requireContext())
+    private val viewWorkoutViewModel: ViewWorkoutViewModel by viewModels {
+        ViewWorkoutViewModelFactory(requireContext())
     }
 
     override fun onCreateView(
@@ -43,12 +41,13 @@ class ViewWorkoutFragment : Fragment() {
 
     private fun initUI() {
         // Adds the selected workout to view model based on workout id
-        supportViewModel.getWorkoutByID(workoutID = args.workoutId)
+        viewWorkoutViewModel.getWorkout(workoutID = args.workoutId)
 
         // Updates the date in UI whenever the date changes in view model
         lifecycleScope.launch {
-            supportViewModel.date.collect {
-                binding.date = "${it.day}.${it.month}.${it.year}"
+            viewWorkoutViewModel.workout.collect {
+                binding.date =
+                    "${it.firstOrNull()?.workout?.day}.${it.firstOrNull()?.workout?.month}.${it.firstOrNull()?.workout?.year}"
             }
         }
 
@@ -58,7 +57,7 @@ class ViewWorkoutFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter =
                 ExerciseListAdapter(
-                    supportViewModel = supportViewModel,
+                    viewModel = viewWorkoutViewModel,
                     clickListener = null,
                     type = "item"
                 )
@@ -70,5 +69,4 @@ class ViewWorkoutFragment : Fragment() {
             findNavController().navigate(direction)
         }
     }
-
 }

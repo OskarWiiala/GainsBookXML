@@ -1,16 +1,11 @@
 package com.example.gainsbookxml.fragments
 
-import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -20,15 +15,16 @@ import com.example.gainsbookxml.databinding.FragmentStatsBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.*
 import com.jjoe64.graphview.GridLabelRenderer
-import com.jjoe64.graphview.series.BarGraphSeries
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * This fragment is used to display statistics of a variable based on selected type, month and year
+ */
 class StatsFragment : Fragment() {
-    val TAG = "StatsFragment"
     private lateinit var binding: FragmentStatsBinding
 
     // Used to handle changing the month and year
@@ -45,7 +41,6 @@ class StatsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d(TAG, "Just before binding init")
         binding = FragmentStatsBinding.inflate(layoutInflater)
 
         initUI()
@@ -85,7 +80,6 @@ class StatsFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-
             binding.graphView.gridLabelRenderer.gridStyle = GridLabelRenderer.GridStyle.BOTH
             binding.graphView.viewport.setMaxX(31.0)
             binding.graphView.gridLabelRenderer.setHumanRounding(true)
@@ -96,7 +90,6 @@ class StatsFragment : Fragment() {
                 R.color.secondary
             )
             statsViewModel.statistics.collect {
-                Log.d(TAG, "Collecting statistics")
                 // Map the statistics, create a datapoint with x value of day and y value of value and then convert it to array.
                 val list: Array<DataPoint> =
                     it.map { statistic -> DataPoint(statistic.day.toDouble(), statistic.value) }
@@ -119,6 +112,7 @@ class StatsFragment : Fragment() {
             }
         }
 
+        // For selecting month
         monthSpinner(
             spinner = binding.monthSpinner,
             supportViewModel = supportViewModel,
@@ -127,6 +121,7 @@ class StatsFragment : Fragment() {
             lifecycleScope = lifecycleScope,
         )
 
+        // For selecting year
         yearSpinner(
             spinner = binding.yearSpinner,
             supportViewModel = supportViewModel,
@@ -135,6 +130,7 @@ class StatsFragment : Fragment() {
             lifecycleScope = lifecycleScope,
         )
 
+        // For selecting variable
         variableSpinner(
             spinner = binding.variableSpinner,
             supportViewModel = supportViewModel,
@@ -143,6 +139,7 @@ class StatsFragment : Fragment() {
             lifecycleScope = lifecycleScope,
         )
 
+        // For selecting type
         typeSpinner(
             spinner = binding.typeSpinner,
             supportViewModel = supportViewModel,

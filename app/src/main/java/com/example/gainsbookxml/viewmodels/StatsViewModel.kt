@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.viewmodels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -38,17 +37,12 @@ class StatsViewModel(context: Context) : ViewModel() {
     private val _statistics = MutableStateFlow(listOf<Statistic>())
     val statistics: StateFlow<List<Statistic>> get() = _statistics
 
-    private val _newValue = MutableStateFlow(0.0)
-    val newValue: StateFlow<Double> get() = _newValue
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("StatsViewModel init", "inside viewModelScope")
             getVariables()
             val currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1
             val currentYear = Calendar.getInstance().get(Calendar.YEAR)
             if (variables.value.isEmpty()) {
-                Log.d("StatsViewModel init", "variables are empty")
                 insertVariable("Bench press")
                 insertVariable("Squat")
                 insertVariable("Deadlift")
@@ -64,7 +58,6 @@ class StatsViewModel(context: Context) : ViewModel() {
                     year = currentYear
                 )
             } else {
-                Log.d("StatsViewModel init", "variables are NOT empty")
                 _variable.emit(variables.value.first())
                 getStatisticsBySelection(
                     variableID = variable.value.variableID,
@@ -77,11 +70,8 @@ class StatsViewModel(context: Context) : ViewModel() {
     }
 
     private suspend fun getVariables() {
-        Log.d("getVariables()", "1")
         val response = dao.getVariables()
-        Log.d("getVariables()", "2")
         _variables.emit(response)
-        Log.d("getVariables()", "3")
     }
 
     suspend fun changeVariable(variable: Variable) {
@@ -108,13 +98,6 @@ class StatsViewModel(context: Context) : ViewModel() {
                 variableName = variableName
             )
             dao.insertVariable(variable = variable)
-        }
-    }
-
-    // Handles setting a new value for editable text field in NewStatisticScreen
-    fun setNewValue(value: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _newValue.emit(value)
         }
     }
 

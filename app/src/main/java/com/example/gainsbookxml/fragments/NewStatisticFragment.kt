@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.gainsbookxml.R
 import com.example.gainsbookxml.databinding.FragmentNewStatisticBinding
-import com.example.gainsbookxml.databinding.FragmentStatsBinding
 import com.example.gainsbookxml.utils.WorkoutDate
 import com.example.gainsbookxml.utils.pickDatePopup
 import com.example.gainsbookxml.utils.typeSpinner
@@ -23,6 +20,12 @@ import com.example.gainsbookxml.viewmodels.SupportViewModelFactory
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * This fragment is used to add a new statistic to the database.
+ * User selects the variable and type and then gives it a value.
+ * Clicking OK adds the newly created statistic to database and navigates back to StatsFragment
+ * @author Oskar Wiiala
+ */
 class NewStatisticFragment : Fragment() {
     private lateinit var binding: FragmentNewStatisticBinding
 
@@ -75,6 +78,7 @@ class NewStatisticFragment : Fragment() {
             )
         }
 
+        // For selecting the variable
         variableSpinner(
             spinner = binding.variableSpinner,
             supportViewModel = supportViewModel,
@@ -83,6 +87,7 @@ class NewStatisticFragment : Fragment() {
             lifecycleScope = lifecycleScope,
         )
 
+        // For selecting the type
         typeSpinner(
             spinner = binding.typeSpinner,
             supportViewModel = supportViewModel,
@@ -109,7 +114,6 @@ class NewStatisticFragment : Fragment() {
                     NewStatisticFragmentDirections.actionNewStatisticFragmentToStatsFragment()
                 findNavController().navigate(direction)
             } else binding.editText.error = "Invalid value type. Value must contain numbers only."
-
         }
 
         // Cancel button, navigates back to LogFragment

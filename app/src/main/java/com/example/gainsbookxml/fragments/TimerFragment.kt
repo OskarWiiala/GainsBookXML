@@ -1,7 +1,6 @@
 package com.example.gainsbookxml.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +13,12 @@ import com.example.gainsbookxml.utils.timerPopup
 import com.example.gainsbookxml.viewmodels.*
 import kotlinx.coroutines.launch
 
+/**
+ * This fragment is used to display a count down and count up timer
+ * The user can also pause and restart the timers
+ * Count down has a fancy red circular progress bar
+ */
 class TimerFragment : Fragment(), TimerProgress {
-    val TAG = "TimerFragment"
-
     private lateinit var binding: FragmentTimerBinding
 
     private val timerViewModel: TimerViewModel by viewModels {
@@ -33,14 +35,18 @@ class TimerFragment : Fragment(), TimerProgress {
     }
 
     private fun initUI() {
+        // pause/resume buttons use the same element, only the text changes, so initially set as pause
         binding.pauseResume = "Pause"
 
+        // Change the displayed time whenever secondsRemaining changes
+        // secondsRemaining is only used with count down
         lifecycleScope.launch {
             timerViewModel.secondsRemaining.collect {
                 binding.time = "${(it / 60)} m ${(it % 60)} s"
             }
         }
 
+        // Whether or not timers are active are dependent if they are visible or not
         lifecycleScope.launch {
             timerViewModel.isCountDownVisible.collect {
                 if (it) {
@@ -53,6 +59,7 @@ class TimerFragment : Fragment(), TimerProgress {
             }
         }
 
+        // Whether or not timers are active are dependent if they are visible or not
         lifecycleScope.launch {
             timerViewModel.isCountUpVisible.collect {
                 if (it) {
@@ -65,6 +72,7 @@ class TimerFragment : Fragment(), TimerProgress {
         }
 
         binding.countDownButton.setOnClickListener {
+            // Popup where you can select a count down time between 10 seconds and 15 minutes
             timerPopup(
                 timerViewModel = timerViewModel,
                 context = requireContext(),
@@ -96,10 +104,16 @@ class TimerFragment : Fragment(), TimerProgress {
         }
     }
 
+    /**
+     * Sets the initial value of the red circular progress bar, which starts at 100 % full
+     */
     private fun initProgressBar() {
         binding.countDown.progress = 100
     }
 
+    /**
+     * Handles stopping the timer and setting the timer visibility to gone
+     */
     private suspend fun handleStop() {
         timerViewModel.setIsTimerPaused(value = false)
         binding.pauseResume = "Pause"
@@ -118,6 +132,9 @@ class TimerFragment : Fragment(), TimerProgress {
         }
     }
 
+    /**
+     * Pauses or resumes the timer. Also changes the text of pauseResume button.
+     */
     private suspend fun handlePauseOrResume() {
         timerViewModel.setIsTimerPaused(value = !timerViewModel.isTimerPaused.value)
         val isPaused = timerViewModel.isTimerPaused.value
@@ -156,6 +173,9 @@ class TimerFragment : Fragment(), TimerProgress {
         }
     }
 
+    /**
+     * Handles the restarting of the timer
+     */
     private suspend fun handleRestart() {
         binding.pauseResume = "Pause"
         val timerType = timerViewModel.timerType.value
@@ -170,11 +190,18 @@ class TimerFragment : Fragment(), TimerProgress {
         }
     }
 
+    /**
+     * Gives the red circular progress bar a new value. Happens every second.
+     * @param newValue the new value, should be between 0 and 100
+     */
     override fun newProgressBarValue(newValue: Int) {
-        Log.d("newProgressBarValue", "value: $newValue")
         binding.countDown.progress = newValue
     }
 
+    /**
+     * Updates the displayed time when count up is running. Happens every second
+     * @param newValue value in seconds.
+     */
     override fun newCountUpValue(newValue: Long) {
         binding.time = "${(newValue / 60)} m ${(newValue % 60)} s"
     }

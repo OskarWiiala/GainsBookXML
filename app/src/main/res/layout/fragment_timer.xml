@@ -54,8 +54,8 @@
             android:id="@+id/timerLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:visibility="gone">
 
             <!--Put timer and timer text here-->
@@ -69,11 +69,11 @@
                 <me.zhanghai.android.materialprogressbar.MaterialProgressBar
                     android:id="@+id/countDown"
                     style="@style/Widget.MaterialProgressBar.ProgressBar"
-                    android:minWidth="150dp"
-                    android:minHeight="150dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"/>
+                    android:minWidth="150dp"
+                    android:minHeight="150dp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/timeView"
