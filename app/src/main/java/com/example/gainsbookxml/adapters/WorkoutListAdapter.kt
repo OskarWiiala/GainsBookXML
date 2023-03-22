@@ -1,5 +1,6 @@
 package com.example.gainsbookxml.adapters
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -10,8 +11,6 @@ import com.example.gainsbookxml.databinding.WorkoutCardBinding
 import com.example.gainsbookxml.utils.WorkoutClickListener
 import com.example.gainsbookxml.utils.WorkoutItem
 import com.example.gainsbookxml.viewmodels.LogViewModel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 
 /**
  * Custom list adapter for workouts.
@@ -22,7 +21,7 @@ import kotlinx.coroutines.delay
  */
 class WorkoutListAdapter(
     private val logViewModel: LogViewModel,
-    private val clickListener: WorkoutClickListener
+    private val clickListener: WorkoutClickListener,
 ) : ListAdapter<WorkoutItem, RecyclerView.ViewHolder>(WorkoutItemCallBack()) {
 
     // View holder holds a card that displays the three
@@ -39,9 +38,17 @@ class WorkoutListAdapter(
             }
         }
 
-        fun bind(item: WorkoutWithExercises, clickListener: WorkoutClickListener) {
+        fun bind(
+            item: WorkoutWithExercises,
+            clickListener: WorkoutClickListener,
+        ) {
+            // Underline date
+            binding.workoutDate.paintFlags =
+                binding.workoutDate.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
             // Date to be displayed at the top of workout_card
             binding.date = "${item.workout.day}.${item.workout.month}.${item.workout.year}"
+
             val exercisePreviews = item.exercises.take(3)
             // Card displays first three exercises as previews
             binding.exercisePreview1 = exercisePreviews.getOrNull(0)?.description ?: ""

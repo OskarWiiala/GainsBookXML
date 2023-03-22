@@ -55,7 +55,8 @@
     <string name="EnterStatisticValue">Enter a value here</string>
 
     <!--Decorated text-->
-    <string name="WorkoutDate"><u>9.3.2023</u></string>
+    <string name="WorkoutDate"><u>%s</u></string>
+    <string name="WorkoutDateTool"><u>9.3.2023</u></string>
 
     <!--Content descriptions-->
     <string name="WorkoutFabCD">Create new workout</string>

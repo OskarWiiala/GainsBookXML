@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:text="@{date}"
                     android:textStyle="bold"
-                    tools:text="@string/WorkoutDate" />
+                    tools:text="@string/WorkoutDateTool" />
 
                 <TextView
                     android:id="@+id/exercise1"

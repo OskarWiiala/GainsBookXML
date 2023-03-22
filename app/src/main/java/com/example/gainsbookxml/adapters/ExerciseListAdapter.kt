@@ -11,7 +11,6 @@ import com.example.gainsbookxml.databinding.ExerciseItemBinding
 import com.example.gainsbookxml.utils.*
 import com.example.gainsbookxml.viewmodels.SupportViewModel
 import com.example.gainsbookxml.viewmodels.ViewWorkoutViewModel
-import kotlinx.coroutines.flow.first
 import java.security.InvalidParameterException
 
 /**
@@ -134,6 +133,8 @@ class ExerciseListAdapter<T: ViewModel>(
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount(): Int {
+        // Give the view model some time to load
+        Thread.sleep(10L)
         return if (viewModel is SupportViewModel) viewModel.exercises.value.size
         else if(viewModel is ViewWorkoutViewModel) viewModel.workout.value.first().exercises.size
         else throw InvalidParameterException()
